@@ -1,0 +1,18 @@
+machine:
+  node:
+    version: 6.10.0
+  services:
+    - postgresql
+dependencies:
+  override:
+    - npm install
+database:
+  override:
+    - npm run createdb:test
+    - npm run migrations:test
+    - npm run seeds:test
+test:
+  pre:
+    - npm run lint
+  override:
+    - npm run test:circleci

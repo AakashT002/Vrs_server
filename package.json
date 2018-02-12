@@ -1,0 +1,64 @@
+{
+  "name": "vrs-services",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "watch": "nodemon server.js",
+    "test": "mocha -R spec tests/**/*-spec.js",
+    "test:circleci": "NODE_ENV=test mocha -R spec tests/**/*-spec.js",
+    "lint": "eslint ./**/*.js --fix --ignore-pattern 'node_modules/' --ignore-pattern package.json",
+    "prettier": "prettier --single-quote --trailing-comma es5 --write 'routes/**/*.js', 'tests/**/*.js'",
+    "createdb:dev": "createdb -h localhost -U postgres vrs-dev-db",
+    "createdb:test": "createdb -h localhost -U postgres vrs-test-db",
+    "migrations": "sequelize db:migrate",
+    "undo-migrations": "sequelize db:migrate:undo:all",
+    "migrations:test": "sequelize db:migrate --env test",
+    "seeds": "sequelize db:seed:all",
+    "undo-seeds": "sequelize db:seed:undo:all",
+    "seeds:test": "sequelize db:seed:all --env test",
+    "undo-seeds:test": "sequelize db:seed:undo:all --env test"
+  },
+  "pre-commit": [
+    "lint"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CognizantStudio/lp02-team-m-requestor-server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CognizantStudio/lp02-team-m-requestor-server/issues"
+  },
+  "homepage": "https://github.com/CognizantStudio/lp02-team-m-requestor-server#readme",
+  "dependencies": {
+    "array-find": "^1.0.0",
+    "aws-sdk": "^2.101.0",
+    "axios": "^0.16.2",
+    "clone": "^2.1.1",
+    "dotenv": "^4.0.0",
+    "flat": "^4.0.0",
+    "ignore-case": "^0.1.0",
+    "jsonwebtoken": "^7.4.1",
+    "moment": "^2.18.1",
+    "node-constants": "0.0.2",
+    "nodemon": "^1.11.0",
+    "pg": "^6.4.2",
+    "pg-hstore": "^2.3.2",
+    "restify": "^4.3.0",
+    "restify-cors-middleware": "0.0.8",
+    "restify-router": "^0.4.2",
+    "sequelize": "^4.33.1",
+    "sequelize-cli": "^2.7.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-http": "^3.0.0",
+    "eslint": "^3.19.0",
+    "mocha": "^3.4.1",
+    "pre-commit": "^1.2.2",
+    "prettier": "^1.3.1"
+  }
+}
