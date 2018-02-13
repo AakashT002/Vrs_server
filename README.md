@@ -1,6 +1,6 @@
 # LP02 - Team M - Backend for Requestor
 
-This will be the repository for services for LP02 - Team M
+This will be the requestor backend for LP02 - Team M
 
 The project uses [restify](http://restify.com/) framework as this is **STRICTLY** for services and doesn't serve any static content like Express framework. Please talk to us if there is any need to serve HTML content also.
 
@@ -48,11 +48,9 @@ You can also make sure to format the code while on save also. In your choice of 
 
 **TODO** - Prettier seems to be a good tool too. Not yet integrated it for this repo
 
-## JSON Web Tokens
+## Keycloak Integration
 
-It is **strongly recommended** NOT to have any sensitive data in .env.
-Hence for development create a `.env.sample` file and add your secret key for JWT (JSON Web Tokens)
-JWT_SECRET=whatEverYouWant
+**TODO**
 
 ## Database
 
@@ -104,7 +102,6 @@ Make sure the below environment variables are set in the herokup dashboard for t
 
 - DATABASE_URL=<<url of postgres://......>>
 - NODE_ENV=production
-- JWT_SECRET=your_SecretKey_Not_Tobe_Shared_With_Others
 
 Migration : `heroku run sequelize db:migrate -m --app lp02-team-m-requestor-server`
 
@@ -116,15 +113,7 @@ _Take note : App has to be deployed first for the migration and seeds to be exec
 
 Services are deployed in https://lp02-team-m-requestor-server.herokuapp.com/
 
-**API         :** /api/currentuser
-
-**Description :** Gets the user object for the current user given their JWT.
-
-**Method      :** GET
-
-**Headers     :** Authorization
-
-**Response    :** If valid token, return the user object as json. Error if invalid or missing token.
+**TODO**
 
 ----
 

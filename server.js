@@ -54,7 +54,10 @@ userRouter.applyRoutes(server, constants.API_PREFIX);
 // Server start
 server.listen(port, function () {
 	console.log('Service API running at ' + port);
-	// associations to come...
+	models.users.hasMany(models.verifications);
+	models.verifications.belongsTo(models.users,
+		{ as: 'verifications', foreignKey: 'userId', targetKey: 'userId' }
+	);
 	console.log('Model associations completed.');
 
 });

@@ -1,25 +1,19 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  var users = sequelize.define('users', {
-	userId: {
-      allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
-      type: DataTypes.INTEGER
-    },
-    firstName: {
+  var temp_products = sequelize.define('temp_products', {
+    gtin: {
       allowNull: false,
       type: DataTypes.STRING
     },
-    lastName: {
+    srn: {
       allowNull: false,
       type: DataTypes.STRING
     },
-    userName: {
+    lot: {
       allowNull: false,
       type: DataTypes.STRING
     },
-    email: {
+    expDate: {
       allowNull: false,
       type: DataTypes.STRING
     }
@@ -28,6 +22,6 @@ module.exports = (sequelize, DataTypes) => {
     freezeTableName: true,
     timestamps: false
   });
-
-  return users;
+  
+  return temp_products;
 };
