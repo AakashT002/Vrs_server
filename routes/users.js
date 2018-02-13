@@ -14,7 +14,7 @@ const requiredUserAttrs = [
 ];
 
 // Route definition
-userRouter.get(constants.CURRENTUSER_URI, currentuser);
+userRouter.get('/users', currentuser);
 
 // Route implementation
 

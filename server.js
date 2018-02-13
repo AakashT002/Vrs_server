@@ -3,6 +3,7 @@ const env = process.env.NODE_ENV || 'development';
 const dotenv = require('dotenv');
 const corsMiddleWare = require('restify-cors-middleware');
 const userRouter = require('./routes/users');
+const verificationsRouter = require('./routes/verifications');
 const constants = require('./constants');
 const models = require('./database/models');
 if (env === 'development') {
@@ -18,6 +19,8 @@ var server = restify.createServer({
 });
 
 const cors = corsMiddleWare({
+	allowHeaders: ['Authorization'],
+	exposeHeaders: ['Authorization']
 });
 
 /**
@@ -26,6 +29,9 @@ const cors = corsMiddleWare({
  * Checks for db connection.
  */
 server.use(function (req, res, next) {
+	if (req.headers.authorization === undefined || !req.headers.authorization.startsWith('Bearer ')) {
+		return next(new restify.errors.UnauthorizedError('Failed to authenticate/authorize'));
+	} else {
 		models.sequelize.authenticate()
 			.then(res => {
 				next();
@@ -34,6 +40,7 @@ server.use(function (req, res, next) {
 				console.error('Unable to connect to the database :', err);
 				next(new restify.errors.InternalError('Unable to connect to the database'));
 			});
+	}
 });
 
 server.use(restify.acceptParser(server.acceptable));
@@ -50,14 +57,13 @@ server.get('/', function (req, res, next) {
 });
 
 userRouter.applyRoutes(server, constants.API_PREFIX);
+verificationsRouter.applyRoutes(server, constants.API_PREFIX);
 
 // Server start
 server.listen(port, function () {
 	console.log('Service API running at ' + port);
 	models.users.hasMany(models.verifications);
-	models.verifications.belongsTo(models.users,
-		{ as: 'verifications', foreignKey: 'userId', targetKey: 'userId' }
-	);
+	models.verifications.belongsTo(models.users);
 	console.log('Model associations completed.');
 
 });
