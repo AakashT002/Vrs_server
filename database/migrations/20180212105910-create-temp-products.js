@@ -2,6 +2,10 @@
 module.exports = {
 	up: (queryInterface, Sequelize) => {
 		return queryInterface.createTable('temp_products', {
+			responderId: {
+				allowNull: false,
+				type: Sequelize.STRING
+			},
 			gtin: {
 				allowNull: false,
 				type: Sequelize.STRING
@@ -17,7 +21,11 @@ module.exports = {
 			expDate: {
 				allowNull: false,
 				type: Sequelize.STRING
-			}
+			},
+			productName: {
+				allowNull: false,
+				type: Sequelize.STRING
+			},
 		});
 	},
 	down: (queryInterface, Sequelize) => {

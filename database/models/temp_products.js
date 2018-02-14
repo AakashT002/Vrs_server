@@ -1,6 +1,10 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
 	var temp_products = sequelize.define('temp_products', {
+		responderId: {
+			allowNull: false,
+			type: DataTypes.STRING
+		},
 		gtin: {
 			allowNull: false,
 			type: DataTypes.STRING
@@ -14,6 +18,10 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.STRING
 		},
 		expDate: {
+			allowNull: false,
+			type: DataTypes.STRING
+		},
+		productName: {
 			allowNull: false,
 			type: DataTypes.STRING
 		}

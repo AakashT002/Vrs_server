@@ -3,6 +3,7 @@ const env = process.env.NODE_ENV || 'development';
 const dotenv = require('dotenv');
 const corsMiddleWare = require('restify-cors-middleware');
 const userRouter = require('./routes/users');
+const productRouter = require('./routes/products');
 const verificationsRouter = require('./routes/verifications');
 const constants = require('./constants');
 const models = require('./database/models');
@@ -58,6 +59,7 @@ server.get('/', function (req, res, next) {
 
 userRouter.applyRoutes(server, constants.API_PREFIX);
 verificationsRouter.applyRoutes(server, constants.API_PREFIX);
+productRouter.applyRoutes(server, constants.API_PREFIX);
 
 // Server start
 server.listen(port, function () {

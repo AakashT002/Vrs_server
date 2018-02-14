@@ -11,7 +11,7 @@ const requiredUserAttrs = [
 ];
 
 // Route definition
-verificationsRouter.get(constants.GET_VERIFICATIONS, getVerifications);
+verificationsRouter.get(constants.ALL_VERIFICATIONS, getVerifications);
 
 // Route implementation
 function getVerifications(req, res, next) {
