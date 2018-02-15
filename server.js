@@ -66,6 +66,8 @@ server.listen(port, function () {
 	console.log('Service API running at ' + port);
 	models.users.hasMany(models.verifications);
 	models.verifications.belongsTo(models.users);
+	models.verifications.hasMany(models.events);
+	models.events.belongsTo(models.verifications);
 	console.log('Model associations completed.');
 
 });

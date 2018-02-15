@@ -13,7 +13,7 @@ module.exports = {
 							key: 'id'
 						}
 					},
-					transactionId: {
+					id: {
 						allowNull: false,
 						primaryKey: true,
 						type: Sequelize.UUID,

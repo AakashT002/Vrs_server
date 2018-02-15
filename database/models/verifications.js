@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false,
 			type: DataTypes.UUID
 		},
-		transactionId: {
+		id: {
 			allowNull: false,
 			primaryKey: true,
 			type: DataTypes.UUID
