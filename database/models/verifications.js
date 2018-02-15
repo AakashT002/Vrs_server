@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
 		},
 		transactionId: {
 			allowNull: false,
-			primaryKey: true,      
+			primaryKey: true,
 			type: DataTypes.UUID
 		},
 		requestorId: {
@@ -15,11 +15,11 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.STRING
 		},
 		responderId: {
-			allowNull: false,
+			allowNull: true,
 			type: DataTypes.STRING
 		},
 		vrsProviderId: {
-			allowNull: false,
+			allowNull: true,
 			type: DataTypes.STRING
 		},
 		requestSentTime: {
@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.DATE
 		},
 		responseRcvTime: {
-			allowNull: false,
+			allowNull: true,
 			type: DataTypes.DATE
 		},
 		status: {

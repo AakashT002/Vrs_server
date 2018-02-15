@@ -47,6 +47,21 @@ module.exports = {
 				srn: '3796912855039',
 				lot: 'O076TK2',
 				expDate: '20180629'
+			},
+			{
+				userId: '058e3066-4376-42ae-bdf4-b10d7427a25f',
+				transactionId: 'ffebe32b-da81-4345-8efe-06fc96524027',
+				requestorId: 'ABC125',
+				responderId: 'PFIZER',
+				vrsProviderId: 'COGNIZANTVRS',
+				requestSentTime: new Date(2017, 5, 1),
+				responseRcvTime: new Date(2017, 5, 1),
+				status: 'verified',
+				deviceType: 'iphone',
+				gtin: '40311122334565',
+				srn: '3796912855039',
+				lot: 'O076TK2',
+				expDate: '20180629'
 			}
 		]);
 	},
