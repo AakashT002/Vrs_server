@@ -4,7 +4,7 @@ module.exports = {
 	up: (queryInterface, Sequelize) => {
 		return queryInterface.bulkInsert('verifications', [
 			{
-				userId: '058e3066-4376-42ae-bdf4-b10d7427a25f',
+				userId: 'eb7a581f-f06c-4290-a805-64e10cb314b4',
 				id: '99ea12e9-62ab-46e9-86dd-08e5fc8a2c8b',
 				requestorId: 'ABC123',
 				responderId: 'PFIZER',
@@ -19,7 +19,7 @@ module.exports = {
 				expDate: '20190321'
 			},
 			{
-				userId: '058e3066-4376-42ae-bdf4-b10d7427a25f',
+				userId: 'eb7a581f-f06c-4290-a805-64e10cb314b4',
 				id: 'c5ac0521-1d2e-4d2f-b0f3-06981b3fb3db',
 				requestorId: 'ABC124',
 				responderId: 'PFIZER',
@@ -34,7 +34,7 @@ module.exports = {
 				expDate: '20170415'
 			},
 			{
-				userId: '058e3066-4376-42ae-bdf4-b10d7427a25f',
+				userId: 'eb7a581f-f06c-4290-a805-64e10cb314b4',
 				id: 'cfebe32b-da81-4345-8efe-06fc96524027',
 				requestorId: 'ABC125',
 				responderId: 'PFIZER',
@@ -49,7 +49,7 @@ module.exports = {
 				expDate: '20180629'
 			},
 			{
-				userId: '058e3066-4376-42ae-bdf4-b10d7427a25f',
+				userId: 'eb7a581f-f06c-4290-a805-64e10cb314b4',
 				id: 'ffebe32b-da81-4345-8efe-06fc96524027',
 				requestorId: 'ABC125',
 				responderId: 'PFIZER',
