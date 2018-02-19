@@ -12,9 +12,8 @@ Refer [here](https://github.com/CognizantStudio/lp02-team-m-requestor-server/blo
 
 Clone this repo into new project folder (e.g., `lp02-team-m-requestor-server-proj`).
 ```shell
-git clone https://github.com/CognizantStudio/lp02-team-m-requestor-server.git  
-lp02-team-m-requestor-server-proj
-cd lp02-team-m-requestor-server-proj
+git clone https://github.com/CognizantStudio/lp02-team-m-requestor-server.git requestor-backend
+cd requestor-backend
 ```
 ### Install npm packages
 
@@ -49,8 +48,8 @@ You can also make sure to format the code while on save also. In your choice of 
 **TODO** - Prettier seems to be a good tool too. Not yet integrated it for this repo
 
 ## Keycloak Integration
+Currently we are not using any keycloak library to check for tokens. API call is checked for `Bearer <<kcTokenFromUI>>` in the `Authorization` header. The Keycloak token is decoded and parsed to get the user details. Ideally we need to check with Keycloak connect `keycloak.protect` on each route/API. This is to be done later.
 
-**TODO**
 
 ## Database
 
@@ -103,7 +102,7 @@ Make sure the below environment variables are set in the herokup dashboard for t
 - DATABASE_URL=<<url of postgres://......>>
 - NODE_ENV=production
 
-Migration : `heroku run sequelize db:migrate -m --app lp02-team-m-requestor-server`
+Migration : `heroku run sequelize db:migrate --env production -m --app lp02-team-m-requestor-server`
 
 Seed : `heroku run sequelize db:seed:all --env production -m --app lp02-team-m-requestor-server`
 
@@ -111,9 +110,10 @@ _Take note : App has to be deployed first for the migration and seeds to be exec
 
 ## API
 
-Services are deployed in https://lp02-team-m-requestor-server.herokuapp.com/
+Services are deployed in https://lp02-team-m-requestor-server.herokuapp.com
 
-**TODO**
+**API documentation**
+TODO : Swagger to be used..
 
 ----
 
