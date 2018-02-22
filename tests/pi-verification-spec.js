@@ -6,10 +6,12 @@ const jwt = require('jsonwebtoken');
 const should = chai.should();
 const testconfig = require('./test-config');
 const constants = require('../constants');
+const models = require('../database/models');
 const url = testconfig.url;
 const piVerificationAPI = constants.API_PREFIX + constants.VERIFY_PRODUCT;
 
 chai.use(chaiHttp);
+let token = null;
 
 describe('PI verification API : ' + piVerificationAPI, function () {
 	before(function (done) {
@@ -25,7 +27,18 @@ describe('PI verification API : ' + piVerificationAPI, function () {
 							return done(new Error('Server is not running.'));
 						return done(err);
 					}
-					return done();
+					models.users.findOne({
+						where: {
+							userName: 'testuser'
+						}
+					}).then(function (testuser, err) {
+						if (testuser != null) {
+              token = jwt.sign({ preferred_username: testuser.userName }, 'secret');
+							return done();
+						} else {
+							return done(new Error('Cannot verify product unless a user exists.'));
+						}
+					});
 				});
 		}, 500);
 	});
@@ -113,7 +126,7 @@ describe('PI verification API : ' + piVerificationAPI, function () {
 		};
 		chai.request(url)
       .post(piVerificationAPI)
-      .set('Authorization', 'Bearer ')
+      .set('Authorization', 'Bearer ' + token)
       .send(input)
 			.end(function (err, res) {
 				if (err) {
