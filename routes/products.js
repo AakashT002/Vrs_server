@@ -23,8 +23,8 @@ function verifyProduct(req, res, next) {
 	const productId = req.body.pi;
 	const requestorId = req.body.requestorId;
 
-	// const token = req.headers.authorization.replace('Bearer ', '');
-	// const decodedToken = jwt.decode(token);
+	const token = req.headers.authorization.replace('Bearer ', '');
+	const decodedToken = jwt.decode(token);
 	var requestSentTime = new Date();
 	var responseRcvTime = null;
 	var userId = null;
@@ -51,7 +51,7 @@ function verifyProduct(req, res, next) {
 
 	models.users.findOne({
 		where: {
-			userName: 'testuser'/*decodedToken.preferred_username*/
+			userName: decodedToken.preferred_username
 		},
 	}).then(function (_user, err) {
 		if (_user) {
