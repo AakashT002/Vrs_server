@@ -7,6 +7,7 @@ define({
 	REQUESTING: 'Requesting',
 	VERIFIED: 'Verified',
 	NOT_VERIFIED: 'Not verified',
-	PENDING: 'Pending'
+	PENDING: 'Pending',
+	GET_VERIFICATION_BY_SRN: '/scans'
 });
 

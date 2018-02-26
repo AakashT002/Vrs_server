@@ -62,6 +62,10 @@ module.exports = {
 					expDate: {
 						allowNull: false,
 						type: Sequelize.STRING
+					},
+					productName: {
+						allowNull: true,
+						type: Sequelize.STRING
 					}
 				});
 			});

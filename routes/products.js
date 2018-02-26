@@ -4,14 +4,6 @@ const jwt = require('jsonwebtoken');
 const uuidv4 = require('uuid/v4');
 const constants = require('../constants');
 const models = require('../database/models');
-const requiredUserAttrs = [
-	'responderId',
-	'gtin',
-	'srn',
-	'lot',
-	'expDate',
-	'productName'
-];
 
 // Route definition
 productRouter.post(constants.VERIFY_PRODUCT, verifyProduct);
@@ -32,7 +24,7 @@ function verifyProduct(req, res, next) {
 	const txId = uuidv4();
 
 	try {
-		String.prototype.replaceAll = function(target, replacement) {
+		String.prototype.replaceAll = function (target, replacement) {
 			return this.split(target).join(replacement);
 		};
 		var sgtin = productId.replace(productId.charAt(0), '{"');
@@ -67,6 +59,7 @@ function verifyProduct(req, res, next) {
 				srn: srn,
 				lot: lot,
 				expDate: expDate,
+				productName: '',
 				events: [
 					{
 						verificationId: txId,
@@ -102,17 +95,13 @@ function _createNewVerifyTransaction(verificationRecord, req, res) {
 
 // Private function : Find product details
 function _findProductAndUpdateVerification(verificationRecord, req, res) {
-	models.temp_products.findOne({
+	models.products.findOne({
 		where: {
 			gtin: verificationRecord.gtin,
-			srn: verificationRecord.srn,
-			lot: verificationRecord.lot,
-			expDate: verificationRecord.expDate
-		},
-		attributes: requiredUserAttrs
+		}
 	}).then(function (_product, err) {
 		if (err) {
-			res.send(400, { result: 'Error while contacting VRS' });
+			res.send(400, { result: 'Error while finding product' });
 		}
 		var _scanData = {
 			'status': constants.PENDING,
@@ -120,11 +109,9 @@ function _findProductAndUpdateVerification(verificationRecord, req, res) {
 			'srn': verificationRecord.srn,
 			'lot': verificationRecord.lot,
 			'expDate': verificationRecord.expDate,
-			'product': '',
-			'transactionId': verificationRecord.id,
+			'id': verificationRecord.id,
 			'requestSentTime': verificationRecord.requestSentTime,
 			'requestorId': verificationRecord.requestorId,
-			'responderId': '',
 			'events': [
 				{
 					'eventTime': verificationRecord.requestSentTime,
@@ -133,30 +120,9 @@ function _findProductAndUpdateVerification(verificationRecord, req, res) {
 				}
 			]
 		};
-		responseRcvTime = new Date();	
+		responseRcvTime = new Date();
 		if (_product != null) {
-			models.events.create({
-				verificationId: verificationRecord.id,
-				eventTime: responseRcvTime,
-				eventStatus: constants.VERIFIED,
-				eventMessage: 'Product verified',
-			}).then(function (event) {
-				if(event != null) {
-					_scanData.status = constants.VERIFIED;
-					_scanData.product = _product.productName;
-					_scanData.responseRcvTime = responseRcvTime;
-					_scanData.responderId = _product.responderId;
-					_scanData.events.push({
-						'eventTime': responseRcvTime,
-						'eventStatus': constants.VERIFIED,
-						'eventMessage': 'Product verified',
-					});
-					verificationRecord.status = constants.VERIFIED;
-					verificationRecord.responseRcvTime = responseRcvTime;
-					verificationRecord.responderId = _product.responderId;
-					_updateVerifyTransaction(verificationRecord, _scanData, req, res);
-				}
-			});
+			_findsrn(verificationRecord, _scanData, _product, req, res);
 		} else {
 			models.events.create({
 				verificationId: verificationRecord.id,
@@ -164,7 +130,7 @@ function _findProductAndUpdateVerification(verificationRecord, req, res) {
 				eventStatus: constants.NOT_VERIFIED,
 				eventMessage: 'Product not verified',
 			}).then(function (event) {
-				if(event != null) {
+				if (event != null) {
 					_scanData.status = constants.NOT_VERIFIED;
 					_scanData.responseRcvTime = responseRcvTime;
 					_scanData.events.push({
@@ -181,12 +147,75 @@ function _findProductAndUpdateVerification(verificationRecord, req, res) {
 	});
 }
 
+// Private function : Find srn details
+function _findsrn(verificationRecord, _scanData, _product, req, res) {
+	models.mockSRN.findOne({
+		where: {
+			gtin: verificationRecord.gtin,
+			srn: verificationRecord.srn,
+			lot: verificationRecord.lot,
+			expDate: verificationRecord.expDate
+		},
+	}).then(function (_mockSRN, err) {
+		if (_mockSRN != null) {
+			models.events.create({
+				verificationId: verificationRecord.id,
+				eventTime: responseRcvTime,
+				eventStatus: constants.VERIFIED,
+				eventMessage: 'Product verified',
+			}).then(function (event) {
+				if (event != null) {
+					_scanData.status = constants.VERIFIED;
+					_scanData.responseRcvTime = responseRcvTime;
+					_scanData.productName = _product.productName;
+					_scanData.responderId = _product.responderId;
+					_scanData.events.push({
+						'eventTime': responseRcvTime,
+						'eventStatus': constants.VERIFIED,
+						'eventMessage': 'Product verified',
+					});
+					verificationRecord.status = constants.VERIFIED;
+					verificationRecord.responseRcvTime = responseRcvTime;
+					verificationRecord.responderId = _product.responderId;
+					verificationRecord.productName = _product.productName;
+					_updateVerifyTransaction(verificationRecord, _scanData, req, res);
+				}
+			});
+		} else {
+			models.events.create({
+				verificationId: verificationRecord.id,
+				eventTime: responseRcvTime,
+				eventStatus: constants.NOT_VERIFIED,
+				eventMessage: 'Serial number not verified',
+			}).then(function (event) {
+				if (event != null) {
+					_scanData.status = constants.NOT_VERIFIED;
+					_scanData.responseRcvTime = responseRcvTime;
+					_scanData.productName = _product.productName;
+					_scanData.responderId = _product.responderId;
+					_scanData.events.push({
+						'eventTime': responseRcvTime,
+						'eventStatus': constants.NOT_VERIFIED,
+						'eventMessage': 'Serial number not verified',
+					});
+					verificationRecord.status = constants.NOT_VERIFIED;
+					verificationRecord.responseRcvTime = responseRcvTime;
+					verificationRecord.responderId = _product.responderId;
+					verificationRecord.productName = _product.productName;
+					_updateVerifyTransaction(verificationRecord, _scanData, req, res);
+				}
+			});
+		}
+	});
+}
+
 // Private function : Find product details
 function _updateVerifyTransaction(verificationRecord, _scanData, req, res) {
-	models.verifications.update(verificationRecord, {	
-		where: { id: verificationRecord.id }}).then(function (record) {
-			res.send(200, { result: _scanData });
-		});
+	models.verifications.update(verificationRecord, {
+		where: { id: verificationRecord.id }
+	}).then(function (record) {
+		res.send(200, { result: [_scanData] });
+	});
 }
 
 module.exports = productRouter;

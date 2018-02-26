@@ -1,27 +1,23 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-	var temp_products = sequelize.define('temp_products', {
-		responderId: {
-			allowNull: false,
-			type: DataTypes.STRING
-		},
+	var mockSRN = sequelize.define('mockSRN', {
 		gtin: {
+			primaryKey: true,
 			allowNull: false,
 			type: DataTypes.STRING
 		},
 		srn: {
+			primaryKey: true,
 			allowNull: false,
 			type: DataTypes.STRING
 		},
 		lot: {
+			primaryKey: true,
 			allowNull: false,
 			type: DataTypes.STRING
 		},
 		expDate: {
-			allowNull: false,
-			type: DataTypes.STRING
-		},
-		productName: {
+			primaryKey: true,
 			allowNull: false,
 			type: DataTypes.STRING
 		}
@@ -30,6 +26,6 @@ module.exports = (sequelize, DataTypes) => {
 			freezeTableName: true,
 			timestamps: false
 		});
-  
-	return temp_products;
+
+	return mockSRN;
 };

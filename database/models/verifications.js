@@ -53,6 +53,10 @@ module.exports = (sequelize, DataTypes) => {
 		expDate: {
 			allowNull: false,
 			type: DataTypes.STRING
+		},
+		productName: {
+			allowNull: true,
+			type: DataTypes.STRING
 		}
 	},
 		{
