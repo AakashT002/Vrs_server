@@ -111,7 +111,7 @@ function _fetchTransactionsBySrnAndUserId(userId, gtin, srn, req, res) {
 				}
 		],
 		order: [
-			['requestSentTime', 'DESC']
+			[{ model: models.events }, 'eventTime', 'DESC'], ['requestSentTime', 'DESC']
 		]
 	}).then(function (_verifications, err) {
 		if (err) {
