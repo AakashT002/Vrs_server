@@ -127,18 +127,18 @@ function _findProductAndUpdateVerification(verificationRecord, req, res) {
 			models.events.create({
 				verificationId: verificationRecord.id,
 				eventTime: responseRcvTime,
-				eventStatus: constants.NOT_VERIFIED,
-				eventMessage: 'Product not verified',
+				eventStatus: constants.ERROR,
+				eventMessage: 'No responder found for GTIN',
 			}).then(function (event) {
 				if (event != null) {
-					_scanData.status = constants.NOT_VERIFIED;
+					_scanData.status = constants.ERROR;
 					_scanData.responseRcvTime = responseRcvTime;
 					_scanData.events.push({
 						'eventTime': responseRcvTime,
-						'eventStatus': constants.NOT_VERIFIED,
-						'eventMessage': 'Product not verified',
+						'eventStatus': constants.ERROR,
+						'eventMessage': 'No responder found for GTIN',
 					});
-					verificationRecord.status = constants.NOT_VERIFIED;
+					verificationRecord.status = constants.ERROR;
 					verificationRecord.responseRcvTime = responseRcvTime;
 					_updateVerifyTransaction(verificationRecord, _scanData, req, res);
 				}
@@ -186,7 +186,7 @@ function _findsrn(verificationRecord, _scanData, _product, req, res) {
 				verificationId: verificationRecord.id,
 				eventTime: responseRcvTime,
 				eventStatus: constants.NOT_VERIFIED,
-				eventMessage: 'Serial number not verified',
+				eventMessage: 'Product not verified',
 			}).then(function (event) {
 				if (event != null) {
 					_scanData.status = constants.NOT_VERIFIED;
@@ -196,7 +196,7 @@ function _findsrn(verificationRecord, _scanData, _product, req, res) {
 					_scanData.events.push({
 						'eventTime': responseRcvTime,
 						'eventStatus': constants.NOT_VERIFIED,
-						'eventMessage': 'Serial number not verified',
+						'eventMessage': 'Product not verified',
 					});
 					verificationRecord.status = constants.NOT_VERIFIED;
 					verificationRecord.responseRcvTime = responseRcvTime;
