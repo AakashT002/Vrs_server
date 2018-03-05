@@ -1,19 +1,19 @@
-# LP02 - Team M - Backend for Requestor
+# LP02 - Team M - VRS - Server 
 
-This will be the requestor backend for LP02 - Team M
+This will be the server for LP02 - Team M
 
 The project uses [restify](http://restify.com/) framework as this is **STRICTLY** for services and doesn't serve any static content like Express framework. Please talk to us if there is any need to serve HTML content also.
 
 ## Contributing
 
-Refer [here](https://github.com/CognizantStudio/lp02-team-m-requestor-server/blob/master/.github/CONTRIBUTING.md) to know more about the  commit comments, branching, naming, merging, pull requests, reviews etc.
+Refer [here](https://github.com/CognizantStudio/lp02-team-m-vrs-server/blob/master/.github/CONTRIBUTING.md) to know more about the  commit comments, branching, naming, merging, pull requests, reviews etc.
 
 ## Getting started
 
-Clone this repo into new project folder (e.g., `lp02-team-m-requestor-server-proj`).
+Clone this repo into new project folder (e.g., `lp02-team-m-vrs-server-proj`).
 ```shell
-git clone https://github.com/CognizantStudio/lp02-team-m-requestor-server.git requestor-backend
-cd requestor-backend
+git clone https://github.com/CognizantStudio/lp02-team-m-vrs-server.git vrs-backend
+cd vrs-backend
 ```
 ### Install npm packages
 
