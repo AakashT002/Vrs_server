@@ -1,9 +1,9 @@
 const Router = require('restify-router').Router;
 const productRouter = new Router('temp-products');
-const jwt = require('jsonwebtoken');
 const uuidv4 = require('uuid/v4');
 const constants = require('../constants');
 const models = require('../database/models');
+const tokenHandler = require('../utils/tokenHandler');
 
 // Route definition
 productRouter.post(constants.VERIFY_PRODUCT, verifyProduct);
@@ -15,8 +15,6 @@ function verifyProduct(req, res, next) {
 	const productId = req.body.pi;
 	const requestorId = req.body.requestorId;
 
-	const token = req.headers.authorization.replace('Bearer ', '');
-	const decodedToken = jwt.decode(token);
 	var requestSentTime = new Date();
 	var responseRcvTime = null;
 	var userId = null;
@@ -43,7 +41,7 @@ function verifyProduct(req, res, next) {
 
 	models.users.findOne({
 		where: {
-			userName: decodedToken.preferred_username
+			userName: tokenHandler.getUserName()
 		},
 	}).then(function (_user, err) {
 		if (_user) {

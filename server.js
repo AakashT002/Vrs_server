@@ -7,6 +7,8 @@ const productRouter = require('./routes/products');
 const verificationsRouter = require('./routes/verifications');
 const constants = require('./constants');
 const models = require('./database/models');
+const tokenHandler = require('./utils/tokenHandler');
+
 if (env === 'development') {
 	dotenv.config({ path: './.env.sample' });
 } else {
@@ -33,6 +35,7 @@ server.use(function (req, res, next) {
 	if (req.headers.authorization === undefined || !req.headers.authorization.startsWith('Bearer ')) {
 		return next(new restify.errors.UnauthorizedError('Failed to authenticate/authorize'));
 	} else {
+		tokenHandler.setToken(req.headers.authorization);
 		models.sequelize.authenticate()
 			.then(res => {
 				next();
