@@ -1,4 +1,4 @@
-const LookupDirectory = require("../../utils/directoryContract");
+const LookupDirectory = require("./directoryContract");
 const Web3 = require('web3');
 const web3 = new Web3;
 
