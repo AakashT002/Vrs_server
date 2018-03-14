@@ -33,7 +33,7 @@ describe('PI verification API : ' + piVerificationAPI, function () {
 						}
 					}).then(function (testuser, err) {
 						if (testuser != null) {
-              token = jwt.sign({ preferred_username: testuser.userName }, 'secret');
+							token = jwt.sign({ preferred_username: testuser.userName }, 'secret');
 							return done();
 						} else {
 							return done(new Error('Cannot verify product unless a user exists.'));

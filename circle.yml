@@ -1,6 +1,6 @@
 machine:
   node:
-    version: 6.10.0
+    version: 7.6.0
   services:
     - postgresql
 dependencies:
@@ -15,4 +15,4 @@ test:
   pre:
     - npm run lint
   override:
-    - npm run test:circleci
+          - npm run test:circleci 
