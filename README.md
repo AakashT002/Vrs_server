@@ -135,6 +135,31 @@ Heroku Git URL>`
 #### Caveats
 - If the seeds or migrations files are updated, you will likely need to clear out the whole database and run the seeds or migration script again.
 
+## Lookup Directory / Blockchain functionality
+
+**Note**: The admin account is the `Owner` of the smart contract, and it's currently set as the primary account on our [AWS-hosted node](https://github.com/CognizantStudio/ethereum-testnet-node). Only one `Owner` is allowed. It can be transferred either by interacting with the `Ownable` contract or, maybe more simply, by redeploying the LD contract (keep in mind this will not fork the contract's state, but create an entirely new instance).
+
+The admin is responsible for maintaining the list of `authorizedAddresses`, which is used to authorize requests to access the LD.
+
+Since the `Owner` account is associated with the node that will facilitate both our Responder app and our VRS(es), this functionality can be accessed from either; it will need more thought post-MVP, though.
+
+### The following functions are implemented here for interacting with the Lookup Directory's smart contract:
+
+* **queryLookup**:
+  * Parameters: GTIN (integer)
+  * Context: This function will be called by VRSes when they need to route a verification request.
+  * Example: `LookupDirectory.queryLookup(11111)`
+
+* **addValidAddress**:
+  * Parameters: Address (hex string)
+  * Context: An admin can use this to authorize an Ethereum account to interact with the LD.
+  * Example: `LookupDirectory.addValidAddress("0x0")`
+  
+* **removeValidAddress**:
+  * Parameters: Address (hex string)
+  * Context: An admin can use this to deauthorize an Ethereum account and block their access to the LD.
+  * Example: `LookupDirectory.removeValidAddress("0x0")`
+
 
 ### To deploy a new contract to the blockchain 
 - must deploy to the Rinkeby test network to work with the AWS node

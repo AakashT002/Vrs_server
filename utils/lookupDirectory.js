@@ -26,12 +26,6 @@ class LookupDirectory {
 		return txHash;
 	}
 
-	async setLookup(gtin, url) {
-		const contract = await this.contract;
-		const txHash = await contract.setLookup(gtin, url, {gas: 4000000});
-		return txHash; 
-	}
-
 	async transferOwnership(address) {
 		const contract = await this.contract;
 		const txHash = await contract.transferOwnership(address, {gas: 4000000});
