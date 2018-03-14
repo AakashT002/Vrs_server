@@ -137,6 +137,15 @@ Heroku Git URL>`
 
 ## Lookup Directory / Blockchain functionality
 
+Before you interact with any of the functions in the Lookup Directory, you'll need to create a `new` instance of the LookupDirectory class and provide it with a contract address. E.g.: 
+`const ld = new LookupDirectory(contractAddress);`
+
+### Current Contract Addresses
+If you deploy a new contract for any environment - please make sure you update the new address here!!
+Dev:
+Staging: `0x45002b939f5e1cf874ff2fa316c3461f06c1fbe2`
+Production:
+
 **Note**: The admin account is the `Owner` of the smart contract, and it's currently set as the primary account on our [AWS-hosted node](https://github.com/CognizantStudio/ethereum-testnet-node). Only one `Owner` is allowed. It can be transferred either by interacting with the `Ownable` contract or, maybe more simply, by redeploying the LD contract (keep in mind this will not fork the contract's state, but create an entirely new instance).
 
 The admin is responsible for maintaining the list of `authorizedAddresses`, which is used to authorize requests to access the LD.
