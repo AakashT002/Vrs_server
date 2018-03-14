@@ -134,3 +134,18 @@ Heroku Git URL>`
 
 #### Caveats
 - If the seeds or migrations files are updated, you will likely need to clear out the whole database and run the seeds or migration script again.
+
+
+### To deploy a new contract to the blockchain 
+- must deploy to the Rinkeby test network to work with the AWS node
+- contract must be the same as is in the `contracts` folder!!!
+  - If you change the contract you deploy - be sure to also change the abi
+
+1. Must have metamask installed and set up with a `Rinkeby` account and test ether
+2. Go to the Remix editor @ `remix.ethereum.org`
+3. Copy and paste `contracts/LookupDirectory.sol` and `contracts/Ownable.sol` into separate windows in the Remix editor
+4. In the `Compile` tab on the right - make sure there are no compiler errors
+5. Click the `Run` tab on the right and make sure that `LookupDirectory` is selected in the dropdown
+6. Click `Create`
+7. Click `Submit` in the Metamask window that should pop up
+8. Wait for transaction to be mined (~30seconds) and grab the contract address

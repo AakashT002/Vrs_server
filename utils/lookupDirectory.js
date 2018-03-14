@@ -1,30 +1,42 @@
-const LookupDirectory = require('./directoryContract');
+const DirectoryContract = require('./directoryContract');
 const Web3 = require('web3');
-const web3 = new Web3;
+const web3 = new Web3();
 
-module.exports = {
-	queryLookup: function queryLookup(gtin) {
-		const lookupDirectory = LookupDirectory();
-		return web3.toAscii(lookupDirectory.queryLookup(gtin));
-	},
+class LookupDirectory {
+	constructor(addr) {
+		this.contract = DirectoryContract(addr);
+	}
 
-	addValidAddress: function addValidAddress(address) {
-		const lookupDirectory = LookupDirectory();
-		return lookupDirectory.addValidAddress(address);
-	},
+	async queryLookup(gtin) {
+		const contract = await this.contract;
+		const returnGtin = await contract.queryLookup(gtin);
+		return web3.toAscii(returnGtin);
+	}
 
-	removeValidAddress: function removeValidAddress(address) {
-		const lookupDirectory = LookupDirectory();
-		return lookupDirectory.removeValidAddress(address);
-	},
+	async addValidAddress(address) {
+		const contract = await this.contract;
+    // txHash is returned since blockchain doesn't return data
+		const txHash = await contract.addValidAddress(address);
+		return txHash;
+	}
 
-	setLookup: function setLookup(gtin, url) {
-		const lookupDirectory = LookupDirectory();
-		return lookupDirectory.setLookup(gtin, url, {gas: 4000000});
-	},
+	async removeValidAddress(address) {
+		const contract = await this.contract;
+		const txHash = await contract.removeValidAddress(address);
+		return txHash;
+	}
 
-	transferOwnership: function transferOwnership(address) {
-		const lookupDirectory = LookupDirectory();
-		return lookupDirectory.transferOwnership(address, {gas: 4000000});
+	async setLookup(gtin, url) {
+		const contract = await this.contract;
+		const txHash = await contract.setLookup(gtin, url, {gas: 4000000});
+		return txHash; 
+	}
+
+	async transferOwnership(address) {
+		const contract = await this.contract;
+		const txHash = await contract.transferOwnership(address, {gas: 4000000});
+		return txHash; 
 	}
 };
+
+module.exports = LookupDirectory;
