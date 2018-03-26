@@ -20,7 +20,19 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.STRING
 		},
 		eventMessage: {
-			allowNull: false,
+			allowNull: true,
+			type: DataTypes.STRING
+		},
+		entityType: {
+			allowNull: true,
+			type: DataTypes.STRING
+		},
+		entityId: {
+			allowNull: true,
+			type: DataTypes.STRING
+		},
+		statusCode: {
+			allowNull: true,
 			type: DataTypes.STRING
 		}
 	},

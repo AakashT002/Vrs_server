@@ -2,12 +2,14 @@ const restify = require('restify');
 const env = process.env.NODE_ENV || 'development';
 const dotenv = require('dotenv');
 const corsMiddleWare = require('restify-cors-middleware');
+const assetRouter = require('./routes/asset');
 const userRouter = require('./routes/users');
 const productRouter = require('./routes/products');
 const verificationsRouter = require('./routes/verifications');
 const constants = require('./constants');
 const models = require('./database/models');
 const tokenHandler = require('./utils/tokenHandler');
+const LookupDirectory = require('./utils/lookupDirectory');
 
 if (env === 'development') {
 	dotenv.config({ path: './.env.sample' });
@@ -60,9 +62,9 @@ server.get('/', function (req, res, next) {
 	next();
 });
 
+assetRouter.applyRoutes(server, constants.API_PREFIX);
 userRouter.applyRoutes(server, constants.API_PREFIX);
 verificationsRouter.applyRoutes(server, constants.API_PREFIX);
-productRouter.applyRoutes(server, constants.API_PREFIX);
 
 // Server start
 server.listen(port, function () {
@@ -72,7 +74,6 @@ server.listen(port, function () {
 	models.verifications.hasMany(models.events);
 	models.events.belongsTo(models.verifications);
 	console.log('Model associations completed.');
-
 });
 
 server.on('error', onError);

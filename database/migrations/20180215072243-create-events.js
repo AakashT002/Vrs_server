@@ -25,7 +25,19 @@ module.exports = {
 				type: Sequelize.STRING
 			},
 			eventMessage: {
-				allowNull: false,
+				allowNull: true,
+				type: Sequelize.STRING
+			},
+			entityType: {
+				allowNull: true,
+				type: Sequelize.STRING
+			},
+			entityId: {
+				allowNull: true,
+				type: Sequelize.STRING
+			},
+			statusCode: {
+				allowNull: true,
 				type: Sequelize.STRING
 			}
 		});

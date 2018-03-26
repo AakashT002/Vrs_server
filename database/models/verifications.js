@@ -2,7 +2,7 @@
 module.exports = (sequelize, DataTypes) => {
 	var verifications = sequelize.define('verifications', {
 		userId: {
-			allowNull: false,
+			allowNull: true,
 			type: DataTypes.UUID
 		},
 		id: {
@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.UUID
 		},
 		requestorId: {
-			allowNull: false,
+			allowNull: true,
 			type: DataTypes.STRING
 		},
 		responderId: {
@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.STRING
 		},
 		requestSentTime: {
-			allowNull: false,
+			allowNull: true,
 			type: DataTypes.DATE
 		},
 		responseRcvTime: {
@@ -35,26 +35,38 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.STRING
 		},
 		deviceType: {
-			allowNull: false,
+			allowNull: true,
 			type: DataTypes.STRING
 		},
 		gtin: {
-			allowNull: false,
+			allowNull: true,
 			type: DataTypes.STRING
 		},
 		srn: {
-			allowNull: false,
+			allowNull: true,
 			type: DataTypes.STRING
 		},
 		lot: {
-			allowNull: false,
+			allowNull: true,
 			type: DataTypes.STRING
 		},
 		expDate: {
-			allowNull: false,
+			allowNull: true,
 			type: DataTypes.STRING
 		},
 		productName: {
+			allowNull: true,
+			type: DataTypes.STRING
+		},
+		pi: {
+			allowNull: false,
+			type: DataTypes.STRING
+		},
+		requestorGLN: {
+			allowNull: true,
+			type: DataTypes.STRING
+		},
+		deviceId: {
 			allowNull: true,
 			type: DataTypes.STRING
 		}

@@ -19,8 +19,8 @@ describe('Fetch verifications by srn API : ' + getVerificationsBySrnAPI, functio
 		// make sure the server is started
 		setTimeout(function () {
 			chai.request(url)
-        .get('/')
-        .set('Authorization', 'Bearer ')
+				.get('/')
+				.set('Authorization', 'Bearer ')
 				.end(function (err, res) {
 					if (err) {
 						if (err.code === 'ECONNREFUSED')
@@ -42,35 +42,35 @@ describe('Fetch verifications by srn API : ' + getVerificationsBySrnAPI, functio
 				});
 		}, 500);
 	});
-  
+
 	it('As it is unprotected url - error 401 should be thrown', function (done) {
 		chai.request(url)
-      .get(getVerificationsBySrnAPI)
+			.get(getVerificationsBySrnAPI)
 			.end(function (err, res) {
 				res.should.have.status(401);
 				res.body.should.be.a('Object');
 				return done();
 			});
 	});
-  
+
 	it('should not support POST', function (done) {
 		chai.request(url)
-      .post(getVerificationsBySrnAPI)
-      .set('Authorization', 'Bearer ' + token)
-			.end(function (err, res) {      
+			.post(getVerificationsBySrnAPI)
+			.set('Authorization', 'Bearer ' + token)
+			.end(function (err, res) {
 				if (err) {
 					res.should.have.status(405);
 					return done();
 				} else {
-					return done('POST Method shouldn\'t be supported');
+					return done('POST Method should not be supported');
 				}
 			});
 	});
-  
+
 	it('should support GET', function (done) {
 		chai.request(url)
-      .get(getVerificationsBySrnAPI)
-      .set('Authorization', 'Bearer ' + token)
+			.get(getVerificationsBySrnAPI)
+			.set('Authorization', 'Bearer ' + token)
 			.end(function (err, res) {
 				if (err) {
 					res.should.not.have.status(405);
@@ -82,22 +82,22 @@ describe('Fetch verifications by srn API : ' + getVerificationsBySrnAPI, functio
 				}
 			});
 	});
-  
+
 	it('should error as unathorized when an invalid token is provided', function (done) {
 		chai.request(url)
-    .get(getVerificationsBySrnAPI)
-    .set('Authorization', '')
-		.end(function (err, res) {
-			res.should.have.status(401);
-			res.body.should.be.a('Object');
-			return done();
-		});
+			.get(getVerificationsBySrnAPI)
+			.set('Authorization', '')
+			.end(function (err, res) {
+				res.should.have.status(401);
+				res.body.should.be.a('Object');
+				return done();
+			});
 	});
 
 	it('should get the when a valid input is provided', function (done) {
 		chai.request(url)
-      .get(getVerificationsBySrnAPI)
-      .set('Authorization', 'Bearer ' + token)
+			.get(getVerificationsBySrnAPI)
+			.set('Authorization', 'Bearer ' + token)
 			.end(function (err, res) {
 				if (err) {
 					return done(err);

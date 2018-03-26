@@ -8,7 +8,8 @@ const testconfig = require('./test-config');
 const constants = require('../constants');
 const models = require('../database/models');
 const url = testconfig.url;
-const piVerificationAPI = constants.API_PREFIX + constants.VERIFY_PRODUCT;
+const uuidv4 = require('uuid/v4');
+const piVerificationAPI = constants.API_PREFIX + '/asset/' + 'gs1:es:1035088100660212345678904321' + '/validation';
 
 chai.use(chaiHttp);
 let token = null;
@@ -29,7 +30,7 @@ describe('PI verification API : ' + piVerificationAPI, function () {
 					}
 					models.users.findOne({
 						where: {
-							userName: 'testuser'
+							userName: 'jim'
 						}
 					}).then(function (testuser, err) {
 						if (testuser != null) {
@@ -44,7 +45,12 @@ describe('PI verification API : ' + piVerificationAPI, function () {
 	});
   
 	it('should throw 401 Error - Unauthorized as this is unprotected url', function (done) {
-		let input = {pi: '', requestorId: '', deviceType: ''};
+		let info = JSON.parse('{"LOT_NUM": "ABC1234", "EXPIRY": "20190321"}');
+		let input = {'GUID': uuidv4(),
+			'GLN': '0321012345676',
+			'REQUEST_TYPE': '001',
+			'data': info
+		};
 		chai.request(url)
       .post(piVerificationAPI)
       .send(input)
@@ -56,12 +62,17 @@ describe('PI verification API : ' + piVerificationAPI, function () {
 	});
   
 	it('should not support GET', function (done) {
-		let input = {pi: '', requestorId: '', deviceType: ''};
+		let info = JSON.parse('{"LOT_NUM": "ABC1234", "EXPIRY": "20190321"}');
+		let input = {'GUID': uuidv4(),
+			'GLN': '0321012345676',
+			'REQUEST_TYPE': '001',
+			'data': info
+		};
 		chai.request(url)
       .get(piVerificationAPI)
-      .set('Authorization', 'Bearer ')
+      .set('Authorization', 'Bearer '+token)
 			.send(input)
-			.end(function (err, res) {      
+			.end(function (err, res) {
 				if (err) {
 					res.should.have.status(405);
 					return done();
@@ -72,38 +83,46 @@ describe('PI verification API : ' + piVerificationAPI, function () {
 	});
   
 	it('should support POST', function (done) {
-		let input = {pi: '', requestorId: '', deviceType: ''};
+		let info = JSON.parse('{"LOT_NUM": "ABC1234", "EXPIRY": "20190321"}');
+		let input = {'GUID': uuidv4(),
+			'GLN': '0321012345676',
+			'REQUEST_TYPE': '001',
+			'data': info
+		};
 		chai.request(url)
       .post(piVerificationAPI)
-      .set('Authorization', 'Bearer ')
+			.set('Authorization', 'Bearer '+token)
+			.set('requestorId', 'ABC123')
+			.set('pi', '(01)10350881006602(21)12345678904321(17)ABC1234(10)20190321')
+			.set('deviceType', 'desktop')
+			.set('deviceId', '')
 			.send(input)
 			.end(function (err, res) {
-				if (err) {
-					res.should.not.have.status(405);
-					res.body.should.be.a('Object');
-					return done();
-				} else {
-					res.should.not.have.status(200);
-					return done();
-				}
+				res.should.not.have.status(405);
+				res.body.should.be.a('Object');
+				return done();
 			});
 	});
   
 	it('should return error messsage when insufficient input provided', function (done) {
-		let input = {pi: ''};
+		let input = {'GUID': uuidv4(),
+			'GLN': '0321012345676',
+			'REQUEST_TYPE': '001',
+		};
 		chai.request(url)
     .post(piVerificationAPI)
-    .set('Authorization', 'Bearer ')
+		.set('Authorization', 'Bearer '+token)
+		.set('requestorId', 'ABC456')
+		.set('pi', '(01)10350881006602(21)12345678904321(17)ABC1234(10)20190321')
+		.set('deviceType', 'desktop')
+		.set('deviceId', '')
     .send(input)
 			.end(function (err, res) {
-				if (err) {
-					res.should.not.have.status(200);
-					res.body.should.be.a('Object');
-					res.body.should.have.property('error');
-					return done();
-				} else {
-					return done('Cannot authenticate without required inputs');
-				}
+				console.log('res::'+JSON.stringify(res));								
+				res.should.not.have.status(200);
+				res.body.should.be.a('Object');
+				res.body.should.have.property('result');
+				return done();
 			});
 	});
   
@@ -119,22 +138,25 @@ describe('PI verification API : ' + piVerificationAPI, function () {
 	});
 
 	it('should get the product details when an valid input is provided', function (done) {
-		let input = {
-			pi: '(01)10350881006602(21)12345678904321(17)ABC1234(10)20190321',
-			requestorId: 'ABC125',
-			deviceType: 'mobile'
+		let info = JSON.parse('{"LOT_NUM": "ABC1234", "EXPIRY": "20190321"}');
+		let input = {'GUID': uuidv4(),
+			'GLN': '0321012345676',
+			'REQUEST_TYPE': '001',
+			'data': info
 		};
 		chai.request(url)
       .post(piVerificationAPI)
-      .set('Authorization', 'Bearer ' + token)
-      .send(input)
+			.set('Authorization', 'Bearer '+token)
+			.set('requestorId', 'ABC456')
+			.set('pi', '(01)10350881006602(21)12345678904321(17)ABC1234(10)20190321')
+			.set('deviceType', 'desktop')
+			.set('deviceId', '')
+			.send(input)
 			.end(function (err, res) {
 				if (err) {
 					return done(err);
 				}
 				res.should.have.status(200);
-				res.body.should.be.a('Object');
-				res.body.should.not.have.property('error');
 				return done();
 			});
 	});

@@ -16,13 +16,13 @@ verificationsRouter.get(constants.GET_VERIFICATION_BY_SRN, getVerificationsBySrn
 
 // Route implementation
 function getRecentVerifications(req, res, next) {
-	
-	var whereCondition ='';
-	
-	if(tokenHandler.isReturnSpecialist()) {
-		whereCondition='"u"."userName" = \'' + tokenHandler.getUserName() + '\' AND ';		
+
+	var whereCondition = '';
+
+	if (tokenHandler.isReturnSpecialist()) {
+		whereCondition = '"u"."userName" = \'' + tokenHandler.getUserName() + '\' AND ';
 	}
-	
+
 	const query = 'SELECT "v1"."userId", "v1"."id", "v1"."requestorId", "v1"."responderId", ' +
 		' "v1"."vrsProviderId", "v1"."requestSentTime", "v1"."responseRcvTime", "v1"."status", ' +
 		' "v1"."deviceType", "v1"."gtin", "v1"."srn", "v1"."lot", "v1"."expDate","v1"."productName" ' +

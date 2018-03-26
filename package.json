@@ -1,7 +1,7 @@
 {
-  "name": "vrs-services",
+  "name": "vrs-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "VRS Server",
   "main": "server.js",
   "scripts": {
     "watch": "nodemon server.js",
@@ -34,14 +34,11 @@
   },
   "homepage": "https://github.com/CognizantStudio/lp02-team-m-requestor-server#readme",
   "dependencies": {
-    "array-find": "^1.0.0",
-    "aws-sdk": "^2.101.0",
-    "axios": "^0.16.2",
+    "axios": "^0.18.0",
     "clone": "^2.1.1",
     "dotenv": "^4.0.0",
     "expect": "^22.4.0",
     "flat": "^4.0.0",
-    "ignore-case": "^0.1.0",
     "jsonwebtoken": "^7.4.1",
     "moment": "^2.18.1",
     "node-constants": "0.0.2",

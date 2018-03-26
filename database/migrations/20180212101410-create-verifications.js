@@ -6,7 +6,7 @@ module.exports = {
 			.then(() => {
 				return queryInterface.createTable('verifications', {
 					userId: {
-						allowNull: false,
+						allowNull: true,
 						type: Sequelize.UUID,
 						references: {
 							model: 'users',
@@ -20,7 +20,7 @@ module.exports = {
 						defaultValue: Sequelize.literal('uuid_generate_v4()')
 					},
 					requestorId: {
-						allowNull: false,
+						allowNull: true,
 						type: Sequelize.STRING
 					},
 					responderId: {
@@ -32,7 +32,7 @@ module.exports = {
 						type: Sequelize.STRING
 					},
 					requestSentTime: {
-						allowNull: false,
+						allowNull: true,
 						type: Sequelize.DATE
 					},
 					responseRcvTime: {
@@ -44,26 +44,38 @@ module.exports = {
 						type: Sequelize.STRING
 					},
 					deviceType: {
-						allowNull: false,
+						allowNull: true,
 						type: Sequelize.STRING
 					},
 					gtin: {
-						allowNull: false,
+						allowNull: true,
 						type: Sequelize.STRING
 					},
 					srn: {
-						allowNull: false,
+						allowNull: true,
 						type: Sequelize.STRING
 					},
 					lot: {
-						allowNull: false,
+						allowNull: true,
 						type: Sequelize.STRING
 					},
 					expDate: {
-						allowNull: false,
+						allowNull: true,
 						type: Sequelize.STRING
 					},
 					productName: {
+						allowNull: true,
+						type: Sequelize.STRING
+					},
+					pi: {
+						allowNull: true,
+						type: Sequelize.STRING
+					},
+					requestorGLN: {
+						allowNull: true,
+						type: Sequelize.STRING
+					},
+					deviceId: {
 						allowNull: true,
 						type: Sequelize.STRING
 					}
