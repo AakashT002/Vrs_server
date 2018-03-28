@@ -2,36 +2,17 @@ const Web3 = require('web3');
 const nodeUrl = 'https://c6c62884.ngrok.io';
 const abi = [
 	{
-		'constant': true,
+		'constant': false,
 		'inputs': [
 			{
-				'name': '_gtin',
-				'type': 'bytes32'
-			}
-		],
-		'name': 'queryLookup',
-		'outputs': [
-			{
-				'name': '',
-				'type': 'bytes32'
-			}
-		],
-		'payable': false,
-		'stateMutability': 'view',
-		'type': 'function'
-	},
-	{
-		'constant': true,
-		'inputs': [],
-		'name': 'owner',
-		'outputs': [
-			{
-				'name': '',
+				'name': '_address',
 				'type': 'address'
 			}
 		],
+		'name': 'addValidAddress',
+		'outputs': [],
 		'payable': false,
-		'stateMutability': 'view',
+		'stateMutability': 'nonpayable',
 		'type': 'function'
 	},
 	{
@@ -45,8 +26,109 @@ const abi = [
 		'name': 'directory',
 		'outputs': [
 			{
-				'name': '',
+				'name': 'requestType',
+				'type': 'string'
+			},
+			{
+				'name': 'entityType',
+				'type': 'string'
+			},
+			{
+				'name': 'entityId',
+				'type': 'string'
+			},
+			{
+				'name': 'url',
+				'type': 'string'
+			}
+		],
+		'payable': false,
+		'stateMutability': 'view',
+		'type': 'function'
+	},
+	{
+		'constant': false,
+		'inputs': [
+			{
+				'name': '_gtin',
 				'type': 'bytes32'
+			},
+			{
+				'name': '_requestType',
+				'type': 'string'
+			},
+			{
+				'name': '_entityType',
+				'type': 'string'
+			},
+			{
+				'name': '_entityId',
+				'type': 'string'
+			},
+			{
+				'name': '_url',
+				'type': 'string'
+			}
+		],
+		'name': 'setLookup',
+		'outputs': [],
+		'payable': false,
+		'stateMutability': 'nonpayable',
+		'type': 'function'
+	},
+	{
+		'constant': true,
+		'inputs': [
+			{
+				'name': '_gtin',
+				'type': 'bytes32'
+			}
+		],
+		'name': 'queryLookup',
+		'outputs': [
+			{
+				'name': '',
+				'type': 'string'
+			},
+			{
+				'name': '',
+				'type': 'string'
+			},
+			{
+				'name': '',
+				'type': 'string'
+			},
+			{
+				'name': '',
+				'type': 'string'
+			}
+		],
+		'payable': false,
+		'stateMutability': 'view',
+		'type': 'function'
+	},
+	{
+		'constant': false,
+		'inputs': [
+			{
+				'name': '_address',
+				'type': 'address'
+			}
+		],
+		'name': 'removeValidAddress',
+		'outputs': [],
+		'payable': false,
+		'stateMutability': 'nonpayable',
+		'type': 'function'
+	},
+	{
+		'constant': true,
+		'inputs': [],
+		'name': 'owner',
+		'outputs': [
+			{
+				'name': '',
+				'type': 'address'
 			}
 		],
 		'payable': false,
@@ -73,69 +155,6 @@ const abi = [
 		'type': 'function'
 	},
 	{
-		'anonymous': false,
-		'inputs': [
-			{
-				'indexed': true,
-				'name': 'previousOwner',
-				'type': 'address'
-			},
-			{
-				'indexed': true,
-				'name': 'newOwner',
-				'type': 'address'
-			}
-		],
-		'name': 'OwnershipTransferred',
-		'type': 'event'
-	},
-	{
-		'constant': false,
-		'inputs': [
-			{
-				'name': '_address',
-				'type': 'address'
-			}
-		],
-		'name': 'addValidAddress',
-		'outputs': [],
-		'payable': false,
-		'stateMutability': 'nonpayable',
-		'type': 'function'
-	},
-	{
-		'constant': false,
-		'inputs': [
-			{
-				'name': '_address',
-				'type': 'address'
-			}
-		],
-		'name': 'removeValidAddress',
-		'outputs': [],
-		'payable': false,
-		'stateMutability': 'nonpayable',
-		'type': 'function'
-	},
-	{
-		'constant': false,
-		'inputs': [
-			{
-				'name': '_gtin',
-				'type': 'bytes32'
-			},
-			{
-				'name': '_url',
-				'type': 'bytes32'
-			}
-		],
-		'name': 'setLookup',
-		'outputs': [],
-		'payable': false,
-		'stateMutability': 'nonpayable',
-		'type': 'function'
-	},
-	{
 		'constant': false,
 		'inputs': [
 			{
@@ -154,6 +173,23 @@ const abi = [
 		'payable': false,
 		'stateMutability': 'nonpayable',
 		'type': 'constructor'
+	},
+	{
+		'anonymous': false,
+		'inputs': [
+			{
+				'indexed': true,
+				'name': 'previousOwner',
+				'type': 'address'
+			},
+			{
+				'indexed': true,
+				'name': 'newOwner',
+				'type': 'address'
+			}
+		],
+		'name': 'OwnershipTransferred',
+		'type': 'event'
 	}
 ];
 

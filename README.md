@@ -142,9 +142,9 @@ Before you interact with any of the functions in the Lookup Directory, you'll ne
 
 ### Current Contract Addresses
 If you deploy a new contract for any environment - please make sure you update the new address here!!
-Dev:
-Staging: `0x45002b939f5e1cf874ff2fa316c3461f06c1fbe2`
-Production:
+- Dev:
+- Staging: `0x83ab93d00b2f57baa20be99d560c7025d12dd396`
+- Production:
 
 **Note**: The admin account is the `Owner` of the smart contract, and it's currently set as the primary account on our [AWS-hosted node](https://github.com/CognizantStudio/ethereum-testnet-node). Only one `Owner` is allowed. It can be transferred either by interacting with the `Ownable` contract or, maybe more simply, by redeploying the LD contract (keep in mind this will not fork the contract's state, but create an entirely new instance).
 
@@ -155,9 +155,21 @@ Since the `Owner` account is associated with the node that will facilitate both 
 ### The following functions are implemented here for interacting with the Lookup Directory's smart contract:
 
 * **queryLookup**:
-  * Parameters: GTIN (integer)
-  * Context: This function will be called by VRSes when they need to route a verification request.
-  * Example: `LookupDirectory.queryLookup(11111)`
+  * Parameters: GTIN (string)
+  * Example: `LookupDirectory.queryLookup("1111::Cog123")
+  * Returns: `{'requestType': _, 'entityType': _, 'entityId': _, 'endpoint': _}`
+
+* **setLookup**:
+  * Parameters: GTIN (string), CI (connectivity info JSON)
+  * Sample CI: {"requestType": "", "entityType": "", "entityId": "", "endpoint": ""}
+  * **!!! GTIN has MAXIMUM LENGTH of 32 characters !!!**
+  * Context: This function will be called by Responder users (e.g. a manufacturer) to create or update "lookups" in the LD.
+  * Example: `LookupDirectory.setLookup("1111::Cog123", {"requestType": "REST", "entityType": "MANUFACTURER", "entityId": "123", "endpoint": "example.com/api/"} )`
+
+* **removeLookup**:
+  * Parameters: GTIN (string)
+  * Context: Call this function to reset a GTIN's connectivity info to empty strings
+  * Example: `LookupDirectory.removeLookup("1111::Cog123")
 
 * **addValidAddress**:
   * Parameters: Address (hex string)
@@ -168,6 +180,7 @@ Since the `Owner` account is associated with the node that will facilitate both 
   * Parameters: Address (hex string)
   * Context: An admin can use this to deauthorize an Ethereum account and block their access to the LD.
   * Example: `LookupDirectory.removeValidAddress("0x0")`
+
 
 
 ### To deploy a new contract to the blockchain 
@@ -183,3 +196,4 @@ Since the `Owner` account is associated with the node that will facilitate both 
 6. Click `Create`
 7. Click `Submit` in the Metamask window that should pop up
 8. Wait for transaction to be mined (~30seconds) and grab the contract address
+9. Authorize our node via `addValidAddress` with the node address `0x58225f9bc4b87b472f467e66b2e408ccf7559141`
