@@ -2,20 +2,20 @@ const models = require('../database/models');
 const constants = require('../constants');
 const serviceUtils = require('../utils/serviceUtils');
 const phases = {
-	[constants.REQUEST_RECEIVED]: '{txId} - Request Received from requestor - Requestor Id - {requestorId}, Requestor GLN : {gln}',
-	[constants.REQUESTOR_VALIDATION]: '{txId} - Contacting Requestor directory for validity of requestor : Requestor Id - {requestorId}, Requestor GLN : {gln}',
-	[constants.PARSING_REQUEST]: '{txId} - Parsing the request...',
-	[constants.VALID_REQUEST]: '{txId} - Request is valid - gtin: {gtin}, srn: {srn}, lot: {lot} expDate: {expDate}',
-	[constants.LOOKUP_CONTACTED]: '{txId} - Contacting GTIN lookup directory for valid connectivity information',
-	[constants.LOOKUP_FOUND]: '{txId} - GTIN found in lookup directory',
-	[constants.LOOKUP_NOT_FOUND]: '{txId} - GTIN not found in lookup directory',
-	[constants.POSTED_TO_RESPONDER]: '{txId} - Posted request to {entityType} {entityId}',
-	[constants.FORWARDED_TO_OTHER_VRS]: '{txId} - Forwarding request to {entityType} {entityId}',
-	[constants.RESPONSE_RECEIVED]: '{txId} - Response Received',
-	[constants.RESPONSE_DELIVERED]: '{txId} - Response Delivered to the requestor',
-	[constants.ERROR]: '{txId} - Product verification status: {status}, Info: {msg}',
-	[constants.VERIFIED]: '{txId} - Product verification status: {status}, Info: {msg}',
-	[constants.NOT_VERIFIED]: '{txId} - Product verification status: {status}, Info: {msg}'
+	[constants.REQUEST_RECEIVED]: 'TxId - {txId} - Request Received from requestor - Requestor Id - {requestorId}, Requestor GLN : {gln}',
+	[constants.REQUESTOR_VALIDATION]: 'TxId - {txId} - Contacting Requestor directory for validity of requestor : Requestor Id - {requestorId}, Requestor GLN : {gln}',
+	[constants.PARSING_REQUEST]: 'TxId - {txId} - Parsing the request...',
+	[constants.VALID_REQUEST]: 'TxId - {txId} - Request is valid - gtin: {gtin}, srn: {srn}, lot: {lot} expDate: {expDate}',
+	[constants.LOOKUP_CONTACTED]: 'TxId - {txId} - Contacting GTIN lookup directory for valid connectivity information',
+	[constants.LOOKUP_FOUND]: 'TxId - {txId} - GTIN found in lookup directory',
+	[constants.LOOKUP_NOT_FOUND]: 'TxId - {txId} - GTIN not found in lookup directory',
+	[constants.POSTED_TO_RESPONDER]: 'TxId - {txId} - Posted request to {entityType} {entityId}',
+	[constants.FORWARDED_TO_OTHER_VRS]: 'TxId - {txId} - Forwarding request to {entityType} {entityId}',
+	[constants.RESPONSE_RECEIVED]: 'TxId - {txId} - Response Received',
+	[constants.RESPONSE_DELIVERED]: 'TxId - {txId} - Response Delivered to the requestor',
+	[constants.ERROR]: 'TxId - {txId} - Product verification status: {status}, Info: {msg}',
+	[constants.VERIFIED]: 'TxId - {txId} - Product verification status: {status}, Info: {msg}',
+	[constants.NOT_VERIFIED]: 'TxId - {txId} - Product verification status: {status}, Info: {msg}'
 };
 
 
