@@ -12,6 +12,7 @@ module.exports = {
 			ci.endpoint = 'https://lp02-team-m-responder-server.herokuapp.com';
 			ci.type = constants.CI_TYPE_REST_ENDPOINT;
 			ci.entityType = constants.ENTITY_TYPE_MANUFACTURER;
+			ci.entityId = 'Pfizer';
 		}
 		return ci;
 	}

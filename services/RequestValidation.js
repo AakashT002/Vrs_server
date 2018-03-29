@@ -1,3 +1,4 @@
+const flatten = require('flat');
 const models = require('../database/models');
 
 module.exports = {
@@ -7,6 +8,10 @@ module.exports = {
 		const productId = req.body.pi;
 		parsedRequest.requestorId = req.body.requestorId;
 		parsedRequest.deviceType = req.body.deviceType;
+		parsedRequest.txId = req.body.GUID;
+		parsedRequest.gln = req.body.GLN;
+		parsedRequest.deviceId = req.body.deviceId;
+		parsedRequest.pi = req.body.pi;
 
 		try {
 			String.prototype.replaceAll = function (target, replacement) {

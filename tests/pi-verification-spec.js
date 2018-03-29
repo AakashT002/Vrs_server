@@ -87,15 +87,15 @@ describe('PI verification API : ' + piVerificationAPI, function () {
 		let input = {'GUID': uuidv4(),
 			'GLN': '0321012345676',
 			'REQUEST_TYPE': '001',
-			'data': info
+			'data': info,
+			'requestorId': 'ABC123',
+			'pi': '(01)10350881006602(21)12345678904321(17)ABC1234(10)20190321',
+			'deviceType': 'desktop',
+			'deviceId': ''
 		};
 		chai.request(url)
       .post(piVerificationAPI)
 			.set('Authorization', 'Bearer '+token)
-			.set('requestorId', 'ABC123')
-			.set('pi', '(01)10350881006602(21)12345678904321(17)ABC1234(10)20190321')
-			.set('deviceType', 'desktop')
-			.set('deviceId', '')
 			.send(input)
 			.end(function (err, res) {
 				res.should.not.have.status(405);
@@ -106,19 +106,17 @@ describe('PI verification API : ' + piVerificationAPI, function () {
   
 	it('should return error messsage when insufficient input provided', function (done) {
 		let input = {'GUID': uuidv4(),
-			'GLN': '0321012345676',
 			'REQUEST_TYPE': '001',
+			'requestorId': 'ABC123',
+			'pi': '(01)10350881006602(21)12345678904321(17)ABC1234(10)20190321',
+			'deviceType': 'desktop',
+			'deviceId': ''
 		};
 		chai.request(url)
     .post(piVerificationAPI)
 		.set('Authorization', 'Bearer '+token)
-		.set('requestorId', 'ABC456')
-		.set('pi', '(01)10350881006602(21)12345678904321(17)ABC1234(10)20190321')
-		.set('deviceType', 'desktop')
-		.set('deviceId', '')
     .send(input)
 			.end(function (err, res) {
-				console.log('res::'+JSON.stringify(res));								
 				res.should.not.have.status(200);
 				res.body.should.be.a('Object');
 				res.body.should.have.property('result');
@@ -142,15 +140,15 @@ describe('PI verification API : ' + piVerificationAPI, function () {
 		let input = {'GUID': uuidv4(),
 			'GLN': '0321012345676',
 			'REQUEST_TYPE': '001',
-			'data': info
+			'data': info,
+			'requestorId': 'ABC123',
+			'pi': '(01)10350881006602(21)12345678904321(17)ABC1234(10)20190321',
+			'deviceType': 'desktop',
+			'deviceId': ''
 		};
 		chai.request(url)
       .post(piVerificationAPI)
 			.set('Authorization', 'Bearer '+token)
-			.set('requestorId', 'ABC456')
-			.set('pi', '(01)10350881006602(21)12345678904321(17)ABC1234(10)20190321')
-			.set('deviceType', 'desktop')
-			.set('deviceId', '')
 			.send(input)
 			.end(function (err, res) {
 				if (err) {

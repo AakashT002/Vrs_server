@@ -19,27 +19,6 @@ assetRouter.post(constants.ASSET_VERIFICATION, assetValidation);
 // For : /api/asset/:epc_identifier/validation
 async function assetValidation(req, res, next) {
 	const requestReceivedTime = new Date();
-	var EPC_IDENTIFIER = req.params.epc_identifier;
-	var lastindexOfColon = EPC_IDENTIFIER.lastIndexOf(':');
-	var sgtin = EPC_IDENTIFIER.substr(lastindexOfColon + 1, EPC_IDENTIFIER.length);
-	if (sgtin.indexOf('.') > -1) {
-		sgtin = sgtin.replace(/[.]/g, '');
-	}
-
-	if (!req.body.GUID || !req.body.GLN || !req.body.REQUEST_TYPE ||
-		!req.body.data || sgtin.length !== 28) {
-		res.send(400, { result: 'Invalid format of request' });
-	}
-	let data;
-	try {
-		data = JSON.parse(req.body.data);
-	} catch (err) {
-		data = req.body.data;
-	}
-	var gtin;
-	var srn;
-	var expDate = data.EXPIRY;
-	var lot = data.LOT_NUM;
 
 	var _responseData = {
 		'GLN': req.body.GLN,
@@ -50,111 +29,222 @@ async function assetValidation(req, res, next) {
 		},
 	};
 
-	gtin = sgtin.substr(0, 14);
-	srn = sgtin.substr(14, sgtin.length + 1);
-	const txId = req.body.GUID;
-	let parsedRequest = {};
+	let parsedRequest = await RequestValidation.parseRequest(req);
+	parsedRequest.requestReceivedTime = requestReceivedTime;
 
-	parsedRequest.txId = txId;
-	parsedRequest.gln = '0321012345676';
-	parsedRequest.gtin = gtin;
-	parsedRequest.srn = srn;
-	parsedRequest.lot = lot;
-	parsedRequest.expDate = expDate;
-	parsedRequest.requestorId = req.headers.requestorid;
-	parsedRequest.deviceType = req.headers.devicetype;
-	parsedRequest.deviceId = req.headers.deviceId;
-	parsedRequest.pi = req.headers.pi;
 	const user = await models.users.findOne({
 		where: {
 			userName: tokenHandler.getUserName()
 		}
 	});
+
+	let eventRecord = {};
+	let deviceId = parsedRequest.deviceType === 'scanner' ? ` ${parsedRequest.deviceId}` : '';
+	eventRecord.verificationId = parsedRequest.txId;
+	eventRecord.eventTime = parsedRequest.requestReceivedTime;
+	eventRecord.eventStatus = constants.REQUEST_RECEIVED;
+	eventRecord.eventMessage = `Verification request from 
+		${user.firstName} ${user.lastName} with ${parsedRequest.deviceType}
+		 ${deviceId}`;
+	eventRecord.entityType = constants.REQUESTOR;
+	eventRecord.entityId = parsedRequest.requestorId;
+	eventRecord.statusCode = '';
+
 	const verificationRecord = new VerificationRecord(
 		user.id,
-		txId,
+		parsedRequest.txId,
 		parsedRequest.gtin,
 		parsedRequest.srn,
 		parsedRequest.lot,
 		parsedRequest.expDate,
 		parsedRequest.deviceType,
 		parsedRequest.requestorId,
-		requestReceivedTime,
-		constants.PENDING, [
-			{
-				verificationId: txId,
-				eventTime: requestReceivedTime,
-				eventStatus: constants.REQUEST_RECEIVED,
-				eventMessage: 'Verification request from ' +
-					user.firstName + ' ' + user.lastName + ' with ' + parsedRequest.deviceType,
-				entityType: constants.REQUESTOR,
-				entityId: parsedRequest.requestorId,
-				statusCode: ''
-			}
-		],
+		parsedRequest.requestReceivedTime,
+		constants.PENDING,
 		parsedRequest.pi,
-		parsedRequest.deviceId
+		parsedRequest.deviceId,
+		parsedRequest.gln
 	);
 
 	await VerificationDAOService.persistVerificationRecord(verificationRecord);
+	VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
+	
+	eventRecord.eventTime = new Date();
+	eventRecord.eventStatus = constants.PARSING_REQUEST;
+	eventRecord.eventMessage = 'Parsing request';
+	eventRecord.entityType = constants.REQUESTOR;
+	eventRecord.entityId = parsedRequest.requestorId;
+	eventRecord.statusCode = '';
+	VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
+	
+	if (parsedRequest.hasErrors || !req.body.GLN || !req.body.pi) {
+		verificationRecord.status = constants.ERROR;
+		verificationRecord.responseRcvTime = new Date();
+		await VerificationDAOService.updateVerificationRecord(verificationRecord);
+		eventRecord.eventTime = new Date();
+		eventRecord.eventStatus = constants.ERROR;
+		eventRecord.eventMessage = constants.INVALID_REQ_MSG;
+		eventRecord.entityType = constants.REQUESTOR;
+		eventRecord.entityId = parsedRequest.requestorId;
+		eventRecord.statusCode = 400;
+		VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
+		return res.send(400, { result: 'Invalid parameters' });
+		next();
+	}
+
+	eventRecord.eventTime = new Date();
+	eventRecord.eventStatus = constants.VALID_REQUEST;
+	eventRecord.eventMessage = 'Valid request';
+	eventRecord.entityType = constants.REQUESTOR;
+	eventRecord.entityId = parsedRequest.requestorId;
+	eventRecord.statusCode = '';
+	VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
+
+	eventRecord.eventTime = new Date();
+	eventRecord.eventStatus = constants.REQUESTOR_VALIDATION;
+	eventRecord.eventMessage = 'Validating requestor';
+	eventRecord.entityType = constants.REQUESTOR;
+	eventRecord.entityId = parsedRequest.requestorId;
+	eventRecord.statusCode = '';
+	VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
+
 	const isRequestorValid = await RequestValidation.verifyRequestor(parsedRequest.requestorId);
 	let responseRcvTime = new Date();
 	if (!isRequestorValid) {
 		verificationRecord.status = constants.ERROR;
 		verificationRecord.responseRcvTime = responseRcvTime;
-		VerificationDAOService.updateVerificationRecord(verificationRecord);
-		VerificationDAOService.addEvent(txId, responseRcvTime, constants.ERROR,
-			'Requestor unknown', constants.REQUESTOR, parsedRequest.requestorId, 403);
-		return res.send(403, 'Requestor unknown');
+		await VerificationDAOService.updateVerificationRecord(verificationRecord);
+		eventRecord.eventTime = responseRcvTime;
+		eventRecord.eventStatus = constants.ERROR;
+		eventRecord.eventMessage = constants.REQUESTOR_UNKNOWN;
+		eventRecord.entityType = constants.REQUESTOR;
+		eventRecord.entityId = parsedRequest.requestorId;
+		eventRecord.statusCode = 403;
+		VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
+		return res.send(403, constants.REQUESTOR_UNKNOWN);
+		next();
 	}
 
 	const connectivityInfo = await LookupService.lookup(parsedRequest.gtin);
 	// const connectivityInfo = await LookupDirectory.queryLookup(parsedRequest.gtin);
+	eventRecord.eventTime = new Date();
+	eventRecord.eventStatus =	constants.LOOKUP_CONTACTED;
+	eventRecord.eventMessage = 'Contacting lookup';
+	eventRecord.entityType = constants.REQUESTOR;
+	eventRecord.entityId = parsedRequest.requestorId;
+	eventRecord.statusCode = '';
+	VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
+
 	_responseData.code = 200;
 	if (connectivityInfo.type === constants.CI_TYPE_REST_ENDPOINT && connectivityInfo.endpoint) {
+		eventRecord.eventTime = new Date();
+		eventRecord.eventStatus =	constants.LOOKUP_FOUND;
+		eventRecord.eventMessage = 'Found lookup';
+		eventRecord.entityType = constants.REQUESTOR;
+		eventRecord.entityId = parsedRequest.requestorId;
+		eventRecord.statusCode = '';
+		VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
+
+		eventRecord.eventTime = new Date();
+		eventRecord.eventStatus =	constants.FORWARDED_TO_OTHER_VRS;
+		eventRecord.eventMessage = 'Forwarding request';
+		eventRecord.entityType = constants.REQUESTOR;
+		eventRecord.entityId = parsedRequest.requestorId;
+		eventRecord.statusCode = '';
+		VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord, connectivityInfo);
+
 		const verificationResponse = await RESTServiceHandler.process(connectivityInfo.endpoint, parsedRequest);
+
+		eventRecord.eventTime = new Date();
+		eventRecord.eventStatus =	constants.POSTED_TO_RESPONDER;
+		eventRecord.eventMessage = 'Contacted responder';
+		eventRecord.entityType = constants.REQUESTOR;
+		eventRecord.entityId = parsedRequest.requestorId;
+		eventRecord.statusCode = '';
+		VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord, connectivityInfo);
+
 		if (verificationResponse.code === 200) {
+			eventRecord.eventTime = new Date();
+			eventRecord.eventStatus =	constants.RESPONSE_RECEIVED;
+			eventRecord.eventMessage = 'Response from responder received';
+			eventRecord.entityType = constants.REQUESTOR;
+			eventRecord.entityId = parsedRequest.requestorId;
+			eventRecord.statusCode = '';
+			VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
+
 			let responseRcvTime = new Date();
-			if (verificationResponse.data.verified === 'TRUE') {
+			if (verificationResponse.data.verified === constants.TRUE) {
 				verificationRecord.status = constants.VERIFIED;
 				verificationRecord.responseRcvTime = responseRcvTime;
 				verificationRecord.responderId = verificationResponse.responderId;
 				verificationRecord.productName = verificationResponse.productName;
 
 				await VerificationDAOService.updateVerificationRecord(verificationRecord);
-				VerificationDAOService.addEvent(txId, responseRcvTime, constants.VERIFIED,
-					'Product verified', constants.RESPONDER, verificationResponse.responderId, 200);
+				eventRecord.eventTime = responseRcvTime;
+				eventRecord.eventStatus = constants.VERIFIED;
+				eventRecord.eventMessage ='Product verified';
+				eventRecord.entityType = constants.RESPONDER;
+				eventRecord.entityId = verificationResponse.responderId;
+				eventRecord.statusCode = 200;
+				VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
 
 				_responseData.responderId = verificationResponse.responderId;
-				_responseData.data.verified = 'TRUE';
+				_responseData.data.verified = constants.TRUE;
 				_responseData.timestamp = responseRcvTime;
-			} else if (verificationResponse.data.verified === 'FALSE') {
+			} else if (verificationResponse.data.verified === constants.FALSE) {
 				verificationRecord.status = constants.NOT_VERIFIED;
 				verificationRecord.responseRcvTime = responseRcvTime;
 				verificationRecord.responderId = verificationResponse.responderId;
 				verificationRecord.productName = verificationResponse.productName;
 
 				await VerificationDAOService.updateVerificationRecord(verificationRecord);
-				VerificationDAOService.addEvent(txId, responseRcvTime, constants.NOT_VERIFIED,
-					'Product not verified', constants.RESPONDER, verificationResponse.responderId, 200);
+				eventRecord.eventTime = responseRcvTime;
+				eventRecord.eventStatus = constants.NOT_VERIFIED;
+				eventRecord.eventMessage ='Product not verified';
+				eventRecord.entityType = constants.RESPONDER;
+				eventRecord.entityId = verificationResponse.responderId;
+				eventRecord.statusCode = 200;
+				VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
 
 				_responseData.responderId = verificationResponse.responderId;
-				_responseData.data.verified = 'FALSE';
+				_responseData.data.verified = constants.FALSE;
 				_responseData.timestamp = responseRcvTime;
 			}
 		}
 	} else {
+		eventRecord.eventTime = new Date();
+		eventRecord.eventStatus =	constants.LOOKUP_NOT_FOUND;
+		eventRecord.eventMessage = 'Lookup not found';
+		eventRecord.entityType = constants.REQUESTOR;
+		eventRecord.entityId = parsedRequest.requestorId;
+		eventRecord.statusCode = '';
+		VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
+
 		let responseRcvTime = new Date();
 		verificationRecord.status = constants.NOT_VERIFIED;
 		verificationRecord.responseRcvTime = responseRcvTime;
 
 		await VerificationDAOService.updateVerificationRecord(verificationRecord);
-		VerificationDAOService.addEvent(txId, responseRcvTime, constants.NOT_VERIFIED,
-			'GTIN not found in Lookupdirectory', constants.REQUESTOR, parsedRequest.requestorId, 200);
+		eventRecord.eventTime = responseRcvTime;
+		eventRecord.eventStatus = constants.NOT_VERIFIED;
+		eventRecord.eventMessage ='GTIN not found in Lookupdirectory';
+		eventRecord.entityType = constants.REQUESTOR;
+		eventRecord.entityId = parsedRequest.requestorId;
+		eventRecord.statusCode = 200;
+		VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
 
-		_responseData.data.verified = 'FALSE';
+		_responseData.data.verified = constants.FALSE;
 		_responseData.timestamp = responseRcvTime;
 	}
+
+	eventRecord.eventTime = new Date();
+	eventRecord.eventStatus = constants.RESPONSE_DELIVERED;
+	eventRecord.eventMessage ='Response delivered';
+	eventRecord.entityType = constants.REQUESTOR;
+	eventRecord.entityId = parsedRequest.requestorId;
+	eventRecord.statusCode = '';
+	VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
+	
 	res.send(200, _responseData);
 	next();
 }

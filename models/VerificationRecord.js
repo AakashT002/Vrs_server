@@ -1,6 +1,6 @@
 class VerificationRecord {
 	constructor(userId, txId, gtin, srn, lot, expDate, deviceType, requestorId,
-		requestSentTime, status, events, pi, deviceId) {
+		requestSentTime, status, pi, deviceId, gln) {
 		this.userId = userId;
 		this.id = txId;
 		this.gtin = gtin;
@@ -11,9 +11,9 @@ class VerificationRecord {
 		this.requestorId = requestorId;
 		this.requestSentTime = requestSentTime;
 		this.status = status;
-		this.events = events;
 		this.pi = pi;
 		this.deviceId = deviceId;
+		this.requestorGLN = gln;
 	}
 }
 
