@@ -32,6 +32,8 @@ define({
 	FALSE: 'FALSE',
 	INVALID_REQ_MSG: `The request was not formatted properly. 
 		Please verify the request conforms to this specification, 
-		and re-issue the request in the correct format.`
+		and re-issue the request in the correct format.`,
+	LOOKUP_NOTFOUND_MSG: `Responders Repository Connectivity Information Not Found. 
+		Contact the Manufacturer / Product GTIN Owner.`
 });
 
