@@ -27,8 +27,7 @@ module.exports = {
 				return response.data.result;
 			}
 		}).catch(async function (error) {
-			console.log(error);
-			if (error.request.status=== 404)
+			if (error.response.status=== 404)
 			{
 				const user = await models.users.findOne({
 					where: {
@@ -52,7 +51,7 @@ module.exports = {
 				verificationRecord.errorCode=404;
 				return verificationRecord;
 			}
-			else if (error.request.statusText.code === 'ECONNREFUSED') {
+			else if (error.response.status === 503 || error.code === 'ECONNREFUSED') {
 				const user = await models.users.findOne({
 					where: {
 						userName: tokenHandler.getUserName()
