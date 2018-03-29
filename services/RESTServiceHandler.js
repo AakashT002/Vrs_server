@@ -27,6 +27,7 @@ module.exports = {
 				return response.data.result;
 			}
 		}).catch(async function (error) {
+			console.log(error);
 			if (error.request.status=== 404)
 			{
 				const user = await models.users.findOne({
