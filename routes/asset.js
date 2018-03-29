@@ -216,7 +216,7 @@ async function assetValidation(req, res, next) {
 			_responseData.code = 503;
 			_responseData.data.error_message = 'Responder might be undergoing maintenance or temporarily unavailable';
 			await VerificationDAOService.updateVerificationRecord(verificationResponse);
-			eventRecord.eventTime = requestReceivedTime;
+			eventRecord.eventTime = new Date();
 			eventRecord.eventStatus = constants.ERROR;
 			eventRecord.eventMessage = 'Responder might be undergoing maintenance or temporarily unavailable';
 			eventRecord.entityType = connectivityInfo.entityType;
@@ -230,7 +230,7 @@ async function assetValidation(req, res, next) {
 			_responseData.data.error_message = 'The requested resource does not exist';
 			await VerificationDAOService.updateVerificationRecord(verificationResponse);
 
-			eventRecord.eventTime = requestReceivedTime;
+			eventRecord.eventTime = new Date();
 			eventRecord.eventStatus = constants.ERROR;
 			eventRecord.eventMessage = 'The requested resource does not exist';
 			eventRecord.entityType = connectivityInfo.entityType;
@@ -269,7 +269,7 @@ async function assetValidation(req, res, next) {
 	eventRecord.entityType = constants.REQUESTOR;
 	eventRecord.entityId = parsedRequest.requestorId;
 	eventRecord.statusCode = '';
-	VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
+	await VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
 
 	res.send(200, _responseData);
 	next();
