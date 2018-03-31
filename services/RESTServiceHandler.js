@@ -27,31 +27,7 @@ module.exports = {
 				return response.data.result;
 			}
 		}).catch(async function (error) {
-			if (error.response.status=== 404)
-			{
-				const user = await models.users.findOne({
-					where: {
-						userName: tokenHandler.getUserName()
-					}
-				});
-				const verificationRecord = new VerificationRecord(
-				user.id,
-				verificationRequest.txId,
-				verificationRequest.gtin,
-				verificationRequest.srn,
-				verificationRequest.lot,
-				verificationRequest.expDate,
-				verificationRequest.deviceType,
-				connectivityInfo.entityId,
-				verificationRequest.requestReceivedTime,
-				constants.ERROR,		
-				verificationRequest.pi,
-				verificationRequest.deviceId,
-		);
-				verificationRecord.errorCode=404;
-				return verificationRecord;
-			}
-			else if (error.response.status === 503 || error.code === 'ECONNREFUSED') {
+			if (!error.response ? error.request.statusText.code === 'ECONNREFUSED' : error.response.status === 503) {
 				const user = await models.users.findOne({
 					where: {
 						userName: tokenHandler.getUserName()
@@ -72,6 +48,28 @@ module.exports = {
 				verificationRequest.deviceId
 		);
 				verificationRecord.errorCode=503;			
+				return verificationRecord;
+			}	else if (error.response.status === 404) {
+				const user = await models.users.findOne({
+					where: {
+						userName: tokenHandler.getUserName()
+					}
+				});
+				const verificationRecord = new VerificationRecord(
+				user.id,
+				verificationRequest.txId,
+				verificationRequest.gtin,
+				verificationRequest.srn,
+				verificationRequest.lot,
+				verificationRequest.expDate,
+				verificationRequest.deviceType,
+				connectivityInfo.entityId,
+				verificationRequest.requestReceivedTime,
+				constants.ERROR,		
+				verificationRequest.pi,
+				verificationRequest.deviceId
+		);
+				verificationRecord.errorCode=404;
 				return verificationRecord;
 			}
 		});

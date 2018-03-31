@@ -34,6 +34,7 @@ define({
 		Please verify the request conforms to this specification, 
 		and re-issue the request in the correct format.`,
 	LOOKUP_NOTFOUND_MSG: `Responders Repository Connectivity Information Not Found. 
-		Contact the Manufacturer / Product GTIN Owner.`
+		Contact the Manufacturer / Product GTIN Owner.`,
+	VRS_PROVIDER: 'VRS Provider'
 });
 

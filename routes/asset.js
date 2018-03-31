@@ -162,7 +162,7 @@ async function assetValidation(req, res, next) {
 		eventRecord.entityId = parsedRequest.requestorId;
 		eventRecord.statusCode = '';
 		VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord, connectivityInfo);
-
+		
 		if (verificationResponse.code === 200) {
 			eventRecord.eventTime = new Date();
 			eventRecord.eventStatus = constants.RESPONSE_RECEIVED;
@@ -215,6 +215,7 @@ async function assetValidation(req, res, next) {
 			_responseData.data.verified = 'FALSE';
 			_responseData.code = 503;
 			_responseData.data.error_message = 'Responder might be undergoing maintenance or temporarily unavailable';
+			verificationResponse.responseRcvTime = new Date();
 			await VerificationDAOService.updateVerificationRecord(verificationResponse);
 			eventRecord.eventTime = new Date();
 			eventRecord.eventStatus = constants.ERROR;
@@ -222,12 +223,13 @@ async function assetValidation(req, res, next) {
 			eventRecord.entityType = connectivityInfo.entityType;
 			eventRecord.entityId = connectivityInfo.entityId;
 			eventRecord.statusCode = 503;
-			VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
+			VerificationDAOService.logAndAddEvent(eventRecord, verificationResponse);
 		} else if (verificationResponse.errorCode === 404) {
 			delete verificationResponse.errorCode;
 			_responseData.data.verified = 'FALSE';
 			_responseData.code = 404;
 			_responseData.data.error_message = 'The requested resource does not exist';
+			verificationResponse.responseRcvTime = new Date();
 			await VerificationDAOService.updateVerificationRecord(verificationResponse);
 
 			eventRecord.eventTime = new Date();
@@ -236,14 +238,14 @@ async function assetValidation(req, res, next) {
 			eventRecord.entityType = connectivityInfo.entityType;
 			eventRecord.entityId = connectivityInfo.entityId;
 			eventRecord.statusCode = 404;
-			VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
+			VerificationDAOService.logAndAddEvent(eventRecord, verificationResponse);
 		}
 	} else {
 		eventRecord.eventTime = new Date();
 		eventRecord.eventStatus = constants.LOOKUP_NOT_FOUND;
 		eventRecord.eventMessage = 'Lookup not found';
-		eventRecord.entityType = constants.REQUESTOR;
-		eventRecord.entityId = parsedRequest.requestorId;
+		eventRecord.entityType = constants.VRS_PROVIDER;
+		eventRecord.entityId = process.env.VRS_PROVIDER_ID;
 		eventRecord.statusCode = '';
 		VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
 
@@ -254,8 +256,8 @@ async function assetValidation(req, res, next) {
 		eventRecord.eventTime = responseRcvTime;
 		eventRecord.eventStatus = constants.NOT_VERIFIED;
 		eventRecord.eventMessage = 'Responders Repository Connectivity Information Not Found. Contact the Manufacturer / Product GTIN Owner.';
-		eventRecord.entityType = constants.REQUESTOR;
-		eventRecord.entityId = parsedRequest.requestorId;
+		eventRecord.entityType = constants.VRS_PROVIDER;
+		eventRecord.entityId = process.env.VRS_PROVIDER_ID;
 		eventRecord.statusCode = 200;
 		VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
 
