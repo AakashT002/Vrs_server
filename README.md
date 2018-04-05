@@ -102,9 +102,17 @@ Make sure the below environment variables are set in the herokup dashboard for t
 - DATABASE_URL=<<url of postgres://......>>
 - NODE_ENV=production
 
-Migration : `heroku run sequelize db:migrate --env production -m --app lp02-team-m-requestor-server`
+For CognizantVRS:
 
-Seed : `heroku run sequelize db:seed:all --env production -m --app lp02-team-m-requestor-server`
+Migration : `heroku run sequelize db:migrate --env production -m --app lp02-team-m-vrs-server`
+
+Seed : `heroku run sequelize db:seed:all --env production -m --app lp02-team-m-vrs-server`
+
+For OtherVRS:
+
+Migration : `heroku run sequelize db:migrate --env production -m --app lp02-team-m-other-vrs-server`
+
+Seed : `heroku run sequelize db:seed:all --env production -m --app lp02-team-m-other-vrs-server`
 
 _Take note : App has to be deployed first for the migration and seeds to be executed._
 
