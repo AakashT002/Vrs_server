@@ -7,7 +7,6 @@ const VerificationDAOService = require('../services/VerificationDAOService');
 const tokenHandler = require('../utils/tokenHandler');
 
 const RequestValidation = require('../services/RequestValidation');
-const LookupDirectory = require('../utils/lookupDirectory');
 const RESTServiceHandler = require('../services/RESTServiceHandler');
 const VerificationRecord = require('../models/VerificationRecord');
 const LookupService = require('../services/LookupService');
@@ -147,7 +146,6 @@ async function assetValidation(req, res, next) {
 		next();
 	}
 
-	// const connectivityInfo = await LookupDirectory.queryLookup(parsedRequest.gtin);
 	eventRecord.eventTime = new Date();
 	eventRecord.eventStatus = constants.LOOKUP_CONTACTED;
 	eventRecord.eventMessage = 'Contacting lookup';
@@ -156,10 +154,9 @@ async function assetValidation(req, res, next) {
 	eventRecord.statusCode = '';
 	VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
 
-
 	const connectivityInfo = await LookupService.lookup(parsedRequest.gtin);
 
-	if (connectivityInfo.type === constants.CI_TYPE_REST_ENDPOINT && connectivityInfo.endpoint && connectivityInfo.endpoint.length > 0) {
+	if (connectivityInfo.requestType === constants.CI_TYPE_REST_ENDPOINT && connectivityInfo.endpoint && connectivityInfo.endpoint.length > 0) {
 		eventRecord.eventTime = new Date();
 		eventRecord.eventStatus = constants.LOOKUP_FOUND;
 		eventRecord.eventMessage = 'Found lookup';
