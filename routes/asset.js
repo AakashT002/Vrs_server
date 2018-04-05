@@ -108,7 +108,7 @@ async function assetValidation(req, res, next) {
 		eventRecord.entityType = constants.REQUESTOR;
 		eventRecord.entityId = parsedRequest.requestorId;
 		eventRecord.statusCode = 400;
-		VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
+		await VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
 		return res.send(400, { result: 'Invalid parameters' });
 		next();
 	}
