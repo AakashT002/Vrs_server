@@ -2,8 +2,10 @@ const jwt = require('jsonwebtoken');
 
 module.exports = {
 	decodedToken: null,
+	rawToken: null,
 	setToken: function(token) {
 		var token = token.replace('Bearer ', '');
+		rawToken = token;
 		decodedToken= jwt.decode(token);
 	},
 	getUserName: function() {
@@ -20,5 +22,8 @@ module.exports = {
 			}
 		}
 		return false;
-	} 
+	},
+	getToken: function() {
+		return rawToken;
+	}
 };

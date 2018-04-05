@@ -11,6 +11,7 @@ const phases = {
 	[constants.LOOKUP_NOT_FOUND]: 'TxId - {txId} - GTIN not found in lookup directory',
 	[constants.POSTED_TO_RESPONDER]: 'TxId - {txId} - Posted request to {entityType} {entityId}',
 	[constants.FORWARDED_TO_OTHER_VRS]: 'TxId - {txId} - Forwarding request to {entityType} {entityId}',
+	[constants.FORWARDED_TO_MANUFACTURER]: 'TxId - {txId} - Forwarding request to {entityType} {entityId}',
 	[constants.RESPONSE_RECEIVED]: 'TxId - {txId} - Response Received',
 	[constants.RESPONSE_DELIVERED]: 'TxId - {txId} - Response Delivered to the requestor',
 	[constants.ERROR]: 'TxId - {txId} - Product verification status: {status}, Info: {msg}',

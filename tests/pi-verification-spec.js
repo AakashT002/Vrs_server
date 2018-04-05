@@ -105,8 +105,10 @@ describe('PI verification API : ' + piVerificationAPI, function () {
 	});
   
 	it('should return error messsage when insufficient input provided', function (done) {
+		let info = JSON.parse('{"LOT_NUM": "ABC1234", "EXPIRY": "20190321"}');
 		let input = {'GUID': uuidv4(),
 			'REQUEST_TYPE': '001',
+			'data': info,
 			'requestorId': 'ABC123',
 			'pi': '(01)10350881006602(21)12345678904321(17)ABC1234(10)20190321',
 			'deviceType': 'desktop',

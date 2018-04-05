@@ -59,7 +59,7 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.STRING
 		},
 		pi: {
-			allowNull: false,
+			allowNull: true,
 			type: DataTypes.STRING
 		},
 		requestorGLN: {

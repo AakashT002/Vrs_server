@@ -31,6 +31,28 @@ async function assetValidation(req, res, next) {
 	};
 
 	let parsedRequest = await RequestValidation.parseRequest(req);
+	
+	var EPC_IDENTIFIER = req.params.epc_identifier;
+	var lastindexOfColon = EPC_IDENTIFIER.lastIndexOf(':');
+	var sgtin = EPC_IDENTIFIER.substr(lastindexOfColon + 1, EPC_IDENTIFIER.length);
+	if (sgtin.indexOf('.') > -1) {
+		sgtin = sgtin.replace(/[.]/g, '');
+	}
+	var validSgtin = true;
+	if (sgtin.length === 28) {
+		parsedRequest.gtin = sgtin.substr(0, 14);
+		parsedRequest.srn = sgtin.substr(14, sgtin.length + 1);
+	} else {
+		validSgtin = false;
+	}
+
+	try{
+		var data = JSON.parse(req.body.data);
+	} catch(err){
+		var data = req.body.data;
+	}
+	parsedRequest.expDate = data.EXPIRY;
+	parsedRequest.lot = data.LOT_NUM;
 	parsedRequest.requestReceivedTime = requestReceivedTime;
 
 	const user = await models.users.findOne({
@@ -77,7 +99,7 @@ async function assetValidation(req, res, next) {
 	eventRecord.statusCode = '';
 	VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
 
-	if (parsedRequest.hasErrors || !req.body.GLN || !req.body.pi) {
+	if (parsedRequest.hasErrors || !req.body.GLN || !validSgtin) {
 		verificationRecord.status = constants.ERROR;
 		verificationRecord.responseRcvTime = new Date();
 		await VerificationDAOService.updateVerificationRecord(verificationRecord);
@@ -134,6 +156,7 @@ async function assetValidation(req, res, next) {
 	eventRecord.statusCode = '';
 	VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
 
+
 	const connectivityInfo = await LookupService.lookup(parsedRequest.gtin);
 
 	if (connectivityInfo.type === constants.CI_TYPE_REST_ENDPOINT && connectivityInfo.endpoint && connectivityInfo.endpoint.length > 0) {
@@ -145,14 +168,24 @@ async function assetValidation(req, res, next) {
 		eventRecord.statusCode = '';
 		VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
 
-		eventRecord.eventTime = new Date();
-		eventRecord.eventStatus = constants.FORWARDED_TO_OTHER_VRS;
-		eventRecord.eventMessage = 'Forwarding request';
-		eventRecord.entityType = constants.REQUESTOR;
-		eventRecord.entityId = parsedRequest.requestorId;
-		eventRecord.statusCode = '';
-		VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord, connectivityInfo);
-
+		if(connectivityInfo.entityType === constants.ENTITY_TYPE_VRS_PROVIDER) {
+			eventRecord.eventTime = new Date();
+			eventRecord.eventStatus = constants.FORWARDED_TO_OTHER_VRS;
+			eventRecord.eventMessage = 'Forwarding request';
+			eventRecord.entityType = connectivityInfo.entityType;
+			eventRecord.entityId = connectivityInfo.entityId;
+			eventRecord.statusCode = '';
+			VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord, connectivityInfo);
+		} else if (connectivityInfo.entityType === constants.ENTITY_TYPE_MANUFACTURER) {
+			eventRecord.eventTime = new Date();
+			eventRecord.eventStatus = constants.FORWARDED_TO_MANUFACTURER;
+			eventRecord.eventMessage = 'Forwarding request';
+			eventRecord.entityType = connectivityInfo.entityType;
+			eventRecord.entityId = connectivityInfo.entityId;
+			eventRecord.statusCode = '';
+			VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord, connectivityInfo);
+		}
+		
 		const verificationResponse = await RESTServiceHandler.process(connectivityInfo, parsedRequest);
 
 		eventRecord.eventTime = new Date();
@@ -164,6 +197,7 @@ async function assetValidation(req, res, next) {
 		VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord, connectivityInfo);
 		
 		if (verificationResponse.code === 200) {
+			_responseData.code = 200;
 			eventRecord.eventTime = new Date();
 			eventRecord.eventStatus = constants.RESPONSE_RECEIVED;
 			eventRecord.eventMessage = 'Response from responder received';
@@ -191,6 +225,7 @@ async function assetValidation(req, res, next) {
 				_responseData.responderId = verificationResponse.responderId;
 				_responseData.data.verified = constants.TRUE;
 				_responseData.timestamp = responseRcvTime;
+				_responseData.productName = verificationResponse.productName;
 			} else if (verificationResponse.data.verified === constants.FALSE) {
 				verificationRecord.status = constants.NOT_VERIFIED;
 				verificationRecord.responseRcvTime = responseRcvTime;
@@ -209,6 +244,7 @@ async function assetValidation(req, res, next) {
 				_responseData.responderId = verificationResponse.responderId;
 				_responseData.data.verified = constants.FALSE;
 				_responseData.timestamp = responseRcvTime;
+				_responseData.productName = verificationResponse.productName;
 			}
 		} else if (verificationResponse.errorCode === 503) {
 			delete verificationResponse.errorCode;

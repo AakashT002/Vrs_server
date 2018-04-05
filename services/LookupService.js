@@ -2,18 +2,21 @@ const constants = require('../constants');
 
 module.exports = {
 	lookup: function (gtin) {
-		const gtins = ['10505801235015', '10350881006602', '30367534281200'];
-		const _gtin = gtins.find(function (element) {
-			return element === gtin;
-		});
+		var vrsProviderId = process.env.VRS_PROVIDER_ID;
+		const gtins = {
+			'10505801235015::CognizantVRS': { endpoint : 'https://lp02-team-m-responder-server.herokuapp.com', type: constants.CI_TYPE_REST_ENDPOINT, entityType:constants.ENTITY_TYPE_MANUFACTURER , entityId:'Pfizer'},
+			'30367534281200::CognizantVRS': { endpoint : 'https://lp02-team-m-responder-server.herokuapp.com', type: constants.CI_TYPE_REST_ENDPOINT, entityType:constants.ENTITY_TYPE_MANUFACTURER , entityId:'Pfizer'},
+			'10350881006602::CognizantVRS': { endpoint : 'https://lp02-team-m-other-vrs-server.herokuapp.com', type: constants.CI_TYPE_REST_ENDPOINT, entityType:constants.ENTITY_TYPE_VRS_PROVIDER , entityId:'OtherVRS'},
+			'10350881006602::OtherVRS': { endpoint : 'https://lp02-team-m-responder-server.herokuapp.com', type: constants.CI_TYPE_REST_ENDPOINT, entityType:constants.ENTITY_TYPE_MANUFACTURER , entityId:'Pfizer'}
+			};
+		
+		var gtinForVRS = `${gtin}::${process.env.VRS_PROVIDER_ID}`			
+		const _gtin = gtins.hasOwnProperty(gtinForVRS);
 
-		let ci = {};
 		if (_gtin) {
-			ci.endpoint = 'https://lp02-team-m-responder-server.herokuapp.com';
-			ci.type = constants.CI_TYPE_REST_ENDPOINT;
-			ci.entityType = constants.ENTITY_TYPE_MANUFACTURER;
-			ci.entityId = 'Pfizer';
+			return gtins[gtinForVRS];
+		} else {
+			return {};
 		}
-		return ci;
 	}
 };
