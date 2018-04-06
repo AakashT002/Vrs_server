@@ -184,14 +184,6 @@ async function assetValidation(req, res, next) {
 		}
 		
 		const verificationResponse = await RESTServiceHandler.process(connectivityInfo, parsedRequest);
-
-		eventRecord.eventTime = new Date();
-		eventRecord.eventStatus = constants.POSTED_TO_RESPONDER;
-		eventRecord.eventMessage = 'Contacted responder';
-		eventRecord.entityType = constants.REQUESTOR;
-		eventRecord.entityId = parsedRequest.requestorId;
-		eventRecord.statusCode = '';
-		VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord, connectivityInfo);
 		
 		if (verificationResponse.code === 200) {
 			_responseData.code = 200;
@@ -214,12 +206,12 @@ async function assetValidation(req, res, next) {
 				eventRecord.eventTime = responseRcvTime;
 				eventRecord.eventStatus = constants.VERIFIED;
 				eventRecord.eventMessage = 'Product verified';
-				eventRecord.entityType = constants.RESPONDER;
-				eventRecord.entityId = verificationResponse.responderId;
+				eventRecord.entityType = connectivityInfo.entityType;
+				eventRecord.entityId = connectivityInfo.entityId;
 				eventRecord.statusCode = 200;
 				VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
 
-				_responseData.responderId = verificationResponse.responderId;
+				_responseData.responderId = connectivityInfo.entityId;
 				_responseData.data.verified = constants.TRUE;
 				_responseData.timestamp = responseRcvTime;
 				_responseData.productName = verificationResponse.productName;
@@ -233,12 +225,12 @@ async function assetValidation(req, res, next) {
 				eventRecord.eventTime = responseRcvTime;
 				eventRecord.eventStatus = constants.NOT_VERIFIED;
 				eventRecord.eventMessage = 'Product not verified';
-				eventRecord.entityType = constants.RESPONDER;
-				eventRecord.entityId = verificationResponse.responderId;
+				eventRecord.entityType = connectivityInfo.entityType;
+				eventRecord.entityId = connectivityInfo.entityId;
 				eventRecord.statusCode = 200;
 				VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
 
-				_responseData.responderId = verificationResponse.responderId;
+				_responseData.responderId = connectivityInfo.entityId;
 				_responseData.data.verified = constants.FALSE;
 				_responseData.timestamp = responseRcvTime;
 				_responseData.productName = verificationResponse.productName;
@@ -305,7 +297,7 @@ async function assetValidation(req, res, next) {
 	eventRecord.entityId = parsedRequest.requestorId;
 	eventRecord.statusCode = '';
 	await VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
-
+	
 	res.send(200, _responseData);
 	next();
 }

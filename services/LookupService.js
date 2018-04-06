@@ -13,14 +13,14 @@ module.exports = {
 			'10350881006602::OtherVRS': { endpoint : 'https://lp02-team-m-responder-server.herokuapp.com', requestType: constants.CI_TYPE_REST_ENDPOINT, entityType:constants.ENTITY_TYPE_MANUFACTURER , entityId:'Pfizer'},
 			'10350881234567::CognizantVRS': { endpoint : 'http://lp02-team-m-third-vrs-server.herokuapp.com', requestType: constants.CI_TYPE_REST_ENDPOINT, entityType:constants.ENTITY_TYPE_VRS_PROVIDER , entityId:'VRS3'},
 		};
-		var connectivityInfo= {};
+		var connectivityInfo;
 		var gtinForVRS = `${gtin}::${process.env.VRS_PROVIDER_ID}`;
 		const _gtin = gtins.hasOwnProperty(gtinForVRS);		
-		var connectivityInfo = await lookupDirectory.queryLookup(gtinForVRS)
+		connectivityInfo = await lookupDirectory.queryLookup(gtinForVRS)
 		.catch(async function (error){
 		});
 
-		if(connectivityInfo === undefined || connectivityInfo === {}) {
+		if(!connectivityInfo || connectivityInfo.valueOf === Object().valueOf) {
 			if (_gtin) {
 				connectivityInfo = await gtins[gtinForVRS];
 			} else {
