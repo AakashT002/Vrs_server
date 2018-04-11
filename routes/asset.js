@@ -7,6 +7,7 @@ const VerificationDAOService = require('../services/VerificationDAOService');
 const tokenHandler = require('../utils/tokenHandler');
 
 const RequestValidation = require('../services/RequestValidation');
+const LookupDirectory = require('../utils/lookupDirectory');
 const RESTServiceHandler = require('../services/RESTServiceHandler');
 const VerificationRecord = require('../models/VerificationRecord');
 const LookupService = require('../services/LookupService');
@@ -87,6 +88,7 @@ async function assetValidation(req, res, next) {
 		parsedRequest.deviceId,
 		parsedRequest.gln
 	);
+
 	await VerificationDAOService.persistVerificationRecord(verificationRecord);
 	VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
 
@@ -108,7 +110,7 @@ async function assetValidation(req, res, next) {
 		eventRecord.entityType = constants.REQUESTOR;
 		eventRecord.entityId = parsedRequest.requestorId;
 		eventRecord.statusCode = 400;
-		await VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
+		VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
 		return res.send(400, { result: 'Invalid parameters' });
 		next();
 	}
@@ -146,6 +148,7 @@ async function assetValidation(req, res, next) {
 		next();
 	}
 
+	// const connectivityInfo = await LookupDirectory.queryLookup(parsedRequest.gtin);
 	eventRecord.eventTime = new Date();
 	eventRecord.eventStatus = constants.LOOKUP_CONTACTED;
 	eventRecord.eventMessage = 'Contacting lookup';
@@ -154,9 +157,10 @@ async function assetValidation(req, res, next) {
 	eventRecord.statusCode = '';
 	VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
 
+
 	const connectivityInfo = await LookupService.lookup(parsedRequest.gtin);
 
-	if (connectivityInfo.requestType === constants.CI_TYPE_REST_ENDPOINT && connectivityInfo.endpoint && connectivityInfo.endpoint.length > 0) {
+	if (connectivityInfo.type === constants.CI_TYPE_REST_ENDPOINT && connectivityInfo.endpoint && connectivityInfo.endpoint.length > 0) {
 		eventRecord.eventTime = new Date();
 		eventRecord.eventStatus = constants.LOOKUP_FOUND;
 		eventRecord.eventMessage = 'Found lookup';
@@ -184,7 +188,7 @@ async function assetValidation(req, res, next) {
 		}
 		
 		const verificationResponse = await RESTServiceHandler.process(connectivityInfo, parsedRequest);
-		
+			
 		if (verificationResponse.code === 200) {
 			_responseData.code = 200;
 			eventRecord.eventTime = new Date();
@@ -206,12 +210,12 @@ async function assetValidation(req, res, next) {
 				eventRecord.eventTime = responseRcvTime;
 				eventRecord.eventStatus = constants.VERIFIED;
 				eventRecord.eventMessage = 'Product verified';
-				eventRecord.entityType = connectivityInfo.entityType;
-				eventRecord.entityId = connectivityInfo.entityId;
+				eventRecord.entityType = constants.RESPONDER;
+				eventRecord.entityId = verificationResponse.responderId;
 				eventRecord.statusCode = 200;
 				VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
 
-				_responseData.responderId = connectivityInfo.entityId;
+				_responseData.responderId = verificationResponse.responderId;
 				_responseData.data.verified = constants.TRUE;
 				_responseData.timestamp = responseRcvTime;
 				_responseData.productName = verificationResponse.productName;
@@ -225,12 +229,12 @@ async function assetValidation(req, res, next) {
 				eventRecord.eventTime = responseRcvTime;
 				eventRecord.eventStatus = constants.NOT_VERIFIED;
 				eventRecord.eventMessage = 'Product not verified';
-				eventRecord.entityType = connectivityInfo.entityType;
-				eventRecord.entityId = connectivityInfo.entityId;
+				eventRecord.entityType = constants.RESPONDER;
+				eventRecord.entityId = verificationResponse.responderId;
 				eventRecord.statusCode = 200;
 				VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
 
-				_responseData.responderId = connectivityInfo.entityId;
+				_responseData.responderId = verificationResponse.responderId;
 				_responseData.data.verified = constants.FALSE;
 				_responseData.timestamp = responseRcvTime;
 				_responseData.productName = verificationResponse.productName;
@@ -241,7 +245,9 @@ async function assetValidation(req, res, next) {
 			_responseData.code = 503;
 			_responseData.data.error_message = 'Responder might be undergoing maintenance or temporarily unavailable';
 			verificationResponse.responseRcvTime = new Date();
-			await VerificationDAOService.updateVerificationRecord(verificationResponse);
+			verificationRecord.status = constants.ERROR;
+			verificationRecord.responseRcvTime = new Date();
+			await VerificationDAOService.updateVerificationRecord(verificationRecord);
 			eventRecord.eventTime = new Date();
 			eventRecord.eventStatus = constants.ERROR;
 			eventRecord.eventMessage = 'Responder might be undergoing maintenance or temporarily unavailable';
@@ -255,7 +261,9 @@ async function assetValidation(req, res, next) {
 			_responseData.code = 404;
 			_responseData.data.error_message = 'The requested resource does not exist';
 			verificationResponse.responseRcvTime = new Date();
-			await VerificationDAOService.updateVerificationRecord(verificationResponse);
+			verificationRecord.status = constants.ERROR;
+			verificationRecord.responseRcvTime = new Date();
+			await VerificationDAOService.updateVerificationRecord(verificationRecord);
 
 			eventRecord.eventTime = new Date();
 			eventRecord.eventStatus = constants.ERROR;
@@ -297,7 +305,7 @@ async function assetValidation(req, res, next) {
 	eventRecord.entityId = parsedRequest.requestorId;
 	eventRecord.statusCode = '';
 	await VerificationDAOService.logAndAddEvent(eventRecord, verificationRecord);
-	
+
 	res.send(200, _responseData);
 	next();
 }

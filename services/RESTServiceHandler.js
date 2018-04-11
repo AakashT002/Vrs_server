@@ -29,7 +29,7 @@ module.exports = {
 		}
 		
 		let responderEndPoint = connectivityInfo.endpoint + constants.API_PREFIX + '/asset/' + 'gs1:es:' + verificationRequest.gtin + verificationRequest.srn + '/validation';
-
+		var verificationRecord=await this.getVerificationRecord(connectivityInfo,verificationRequest);
 		return await axios({
 			method: 'POST',
 			url: responderEndPoint,
@@ -39,17 +39,31 @@ module.exports = {
 			},
 			data: JSON.parse(dataInput),
 		}).then(async function (response) {
-			if (response.status === 200) {
+			if(response.data.code===503) {
+				verificationRecord.errorCode=503;	
+				return verificationRecord;
+			} else if (response.status === 200) {
 				return response.data;
 			}
 		}).catch(async function (error) {
 			if (!error.response ? error.request.statusText.code === 'ECONNREFUSED' : error.response.status === 503) {
-				const user = await models.users.findOne({
-					where: {
-						userName: tokenHandler.getUserName()
-					}
-				});
-				const verificationRecord = new VerificationRecord(
+				verificationRecord.errorCode=503;			
+				return verificationRecord;
+			}	else if (error.response.status === 404) {
+				verificationRecord.errorCode=404;
+				return verificationRecord;
+			}
+		});
+	},
+
+	getVerificationRecord :async function(connectivityInfo,verificationRequest)
+	{
+		const user = await models.users.findOne({
+			where: {
+				userName: tokenHandler.getUserName()
+			}
+		});
+		const verificationRecord = new VerificationRecord(
 				user.id,
 				verificationRequest.txId,
 				verificationRequest.gtin,
@@ -63,31 +77,6 @@ module.exports = {
 				verificationRequest.pi,
 				verificationRequest.deviceId
 		);
-				verificationRecord.errorCode=503;			
-				return verificationRecord;
-			}	else if (error.response.status === 404) {
-				const user = await models.users.findOne({
-					where: {
-						userName: tokenHandler.getUserName()
-					}
-				});
-				const verificationRecord = new VerificationRecord(
-				user.id,
-				verificationRequest.txId,
-				verificationRequest.gtin,
-				verificationRequest.srn,
-				verificationRequest.lot,
-				verificationRequest.expDate,
-				verificationRequest.deviceType,
-				connectivityInfo.entityId,
-				verificationRequest.requestReceivedTime,
-				constants.ERROR,		
-				verificationRequest.pi,
-				verificationRequest.deviceId
-		);
-				verificationRecord.errorCode=404;
-				return verificationRecord;
-			}
-		});
-	},
+		return verificationRecord;
+	}
 };
