@@ -39,5 +39,7 @@ define({
 	FORWARDED_TO_MANUFACTURER: 'FORWARDED_TO_MANUFACTURER',
 	LD: 'Lookup Directory',
 	OTHER_VRS: 'Other VRS',
+	ADD: 'add',
+	DELETE: 'delete'
 });
 

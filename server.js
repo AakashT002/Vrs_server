@@ -1,5 +1,6 @@
 const restify = require('restify');
 const env = process.env.NODE_ENV || 'development';
+const amqplib = require('amqplib');
 const dotenv = require('dotenv');
 const corsMiddleWare = require('restify-cors-middleware');
 const assetRouter = require('./routes/asset');
@@ -9,13 +10,15 @@ const verificationsRouter = require('./routes/verifications');
 const constants = require('./constants');
 const models = require('./database/models');
 const tokenHandler = require('./utils/tokenHandler');
-const LookupDirectory = require('./utils/lookupDirectory');
+const LookupService = require('./services/LookupService');
 
 if (env === 'development') {
 	dotenv.config({ path: './.env.sample' });
 } else {
 	dotenv.config();
 }
+
+let open = amqplib.connect(process.env.CLOUDAMQP_URL);
 
 // Server creation
 const port = normalizePort(process.env.PORT || 3000);
@@ -67,13 +70,54 @@ userRouter.applyRoutes(server, constants.API_PREFIX);
 verificationsRouter.applyRoutes(server, constants.API_PREFIX);
 
 // Server start
-server.listen(port, function () {
+server.listen(port, async function () {
 	console.log('Service API running at ' + port);
 	models.users.hasMany(models.verifications);
 	models.verifications.belongsTo(models.users);
 	models.verifications.hasMany(models.events);
 	models.events.belongsTo(models.verifications);
-	console.log('Model associations completed.');
+	console.log('Model associations completed.');	
+	
+	var queue = process.env.LD_QUEUE;
+	open.then(function (conn) {
+		var ok = conn.createChannel();
+		ok = ok.then(function (ch) {
+			ch.assertQueue(queue);
+			ch.consume(queue, async function (msg) {
+				if (msg !== null) {
+					var msgObj = JSON.parse(msg.content.toString());
+					var gtin = msgObj.gtin;
+					if (msgObj.changeType === constants.ADD) {
+						var ciFromQueue = {
+							endpoint: msgObj.endPoint,
+							requestType: constants.CI_TYPE_REST_ENDPOINT,
+							entityType: constants.ENTITY_TYPE_MANUFACTURER,
+							entityId: msgObj.responderId
+						};
+						var ciForOtherVRS = {
+							endpoint: process.env.VRS_ENDPOINT,
+							requestType: constants.CI_TYPE_REST_ENDPOINT,
+							entityType: constants.ENTITY_TYPE_VRS_PROVIDER,
+							entityId: process.env.VRS_PROVIDER_ID
+						};
+						try {
+							await LookupService.setLookup(`${gtin}::${process.env.VRS_PROVIDER_ID}`, ciFromQueue);
+							await LookupService.setLookup(`${gtin}::${process.env.OTHER_VRS_PROVIDER}`, ciForOtherVRS);
+						} catch (err) {
+						}
+					} else if (msgObj.changeType === constants.DELETE) {
+						try {
+							await LookupService.removeLookup(`${gtin}::CognizantVRS`);
+							await LookupService.removeLookup(`${gtin}::OtherVRS`);
+						} catch (err) {
+						}
+					}
+					ch.ack(msg);
+				}
+			});
+		});
+		return ok;
+	}).then(null, console.warn);
 });
 
 server.on('error', onError);
