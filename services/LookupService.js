@@ -20,7 +20,7 @@ module.exports = {
 		.catch(async function (error){
 		});
 
-		if(!connectivityInfo || connectivityInfo.valueOf === Object().valueOf) {
+		if(!connectivityInfo || connectivityInfo.valueOf === {}) {
 			if (_gtin) {
 				connectivityInfo = await this.gtins[gtinForVRS];
 			} else {
@@ -32,11 +32,13 @@ module.exports = {
 	setLookup: async function (gtin, ci) {
 		this.gtins[gtin] = ci;
 		await lookupDirectory.setLookup(gtin, ci).catch(function(err) {
+			console.log(err);
 		});
 	},
 	removeLookup: async function (gtin) {
 		this.gtins[gtin] = {};
 		await lookupDirectory.removeLookup(gtin).catch(function(err) {
+			console.log(err);
 		});
 	}
 };

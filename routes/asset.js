@@ -160,7 +160,7 @@ async function assetValidation(req, res, next) {
 
 	const connectivityInfo = await LookupService.lookup(parsedRequest.gtin);
 
-	if (connectivityInfo.type === constants.CI_TYPE_REST_ENDPOINT && connectivityInfo.endpoint && connectivityInfo.endpoint.length > 0) {
+	if (connectivityInfo.requestType === constants.CI_TYPE_REST_ENDPOINT && connectivityInfo.endpoint && connectivityInfo.endpoint.length > 0) {
 		eventRecord.eventTime = new Date();
 		eventRecord.eventStatus = constants.LOOKUP_FOUND;
 		eventRecord.eventMessage = 'Found lookup';
