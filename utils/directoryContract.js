@@ -1,5 +1,5 @@
 const Web3 = require('web3');
-const nodeUrl = 'https://c6c62884.ngrok.io';
+const nodeUrl = process.env.NODE_ENDPOINT;
 const abi = [
 	{
 		'constant': false,
@@ -195,7 +195,7 @@ const abi = [
 
 module.exports = async (addr) => {
 	const web3 = new Web3(new Web3.providers.HttpProvider(nodeUrl));
-	web3.eth.defaultAccount = '0x58225f9bc4b87b472f467e66b2e408ccf7559141';
+	web3.eth.defaultAccount = process.env.NODE_ACCOUNT;
 	const LookupDirectory = web3.eth.contract(abi);
 	const directoryContract = LookupDirectory.at(addr);
 	return directoryContract; 

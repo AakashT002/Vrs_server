@@ -205,3 +205,7 @@ Since the `Owner` account is associated with the node that will facilitate both 
 7. Click `Submit` in the Metamask window that should pop up
 8. Wait for transaction to be mined (~30seconds) and grab the contract address
 9. Authorize our node via `addValidAddress` with the node address `0x58225f9bc4b87b472f467e66b2e408ccf7559141`
+
+### STEPS TO SETUP A RINKEBY NODE ON AWS
+[Here are the steps](https://gist.github.com/njgheorghita/69c6d8b769151b820b0b9d8745468b24)
+

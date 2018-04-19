@@ -1,7 +1,6 @@
-pragma solidity 0.4.21;
+pragma solidity 0.4.22;
 
 import 'browser/Ownable.sol';
-
 contract LookupDirectory is Ownable{
 
     mapping (bytes32 => Url) public directory;
@@ -15,6 +14,7 @@ contract LookupDirectory is Ownable{
     struct Url {
         string requestType;
         string entityType;
+        string entityId;
         string url;
     }
 
@@ -27,12 +27,13 @@ contract LookupDirectory is Ownable{
         bytes32 _gtin,
         string _requestType,
         string _entityType,
+        string _entityId,
         string _url
     ) 
         public 
         isAuthorized 
     {
-        Url memory setUrl = Url(_requestType, _entityType, _url);
+        Url memory setUrl = Url(_requestType, _entityType, _entityId, _url);
         directory[_gtin] = setUrl;
     }
     
@@ -40,10 +41,11 @@ contract LookupDirectory is Ownable{
         view 
         public
         isAuthorized
-    returns(bytes32, string, string, string) {
-        return (_gtin,
+    returns(string, string, string, string) {
+        return (
         directory[_gtin].requestType,
         directory[_gtin].entityType,
+        directory[_gtin].entityId,
         directory[_gtin].url);
     }
     
