@@ -39,7 +39,7 @@ async function assetValidation(req, res, next) {
 		sgtin = sgtin.replace(/[.]/g, '');
 	}
 	var validSgtin = true;
-	if (sgtin.length === 28) {
+	if (sgtin.length >= 26) {
 		parsedRequest.gtin = sgtin.substr(0, 14);
 		parsedRequest.srn = sgtin.substr(14, sgtin.length + 1);
 	} else {
