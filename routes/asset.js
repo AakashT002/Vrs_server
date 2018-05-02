@@ -244,14 +244,15 @@ async function assetValidation(req, res, next) {
 			delete verificationResponse.errorCode;
 			_responseData.data.verified = 'FALSE';
 			_responseData.code = 503;
-			_responseData.data.error_message = 'Responder might be undergoing maintenance or temporarily unavailable';
+			var msgEntity = (connectivityInfo.entityType === constants.ENTITY_TYPE_MANUFACTURER) ? 'repository' : constants.VRS_PROVIDER;
+			_responseData.data.error_message = `${connectivityInfo.entityId} ${msgEntity} might be undergoing maintenance or temporarily unavailable`;
 			verificationResponse.responseRcvTime = new Date();
 			verificationRecord.status = constants.ERROR;
 			verificationRecord.responseRcvTime = new Date();
 			await VerificationDAOService.updateVerificationRecord(verificationRecord);
 			eventRecord.eventTime = new Date();
 			eventRecord.eventStatus = constants.ERROR;
-			eventRecord.eventMessage = 'Responder might be undergoing maintenance or temporarily unavailable';
+			eventRecord.eventMessage = `${connectivityInfo.entityId} ${msgEntity} might be undergoing maintenance or temporarily unavailable`;
 			eventRecord.entityType = connectivityInfo.entityType;
 			eventRecord.entityId = connectivityInfo.entityId;
 			eventRecord.statusCode = 503;
@@ -260,7 +261,7 @@ async function assetValidation(req, res, next) {
 			delete verificationResponse.errorCode;
 			_responseData.data.verified = 'FALSE';
 			_responseData.code = 404;
-			_responseData.data.error_message = 'The requested resource does not exist';
+			_responseData.data.error_message = 'Responder repository info for the GTIN is invalid. Please contact system admin.';
 			verificationResponse.responseRcvTime = new Date();
 			verificationRecord.status = constants.ERROR;
 			verificationRecord.responseRcvTime = new Date();
@@ -268,7 +269,7 @@ async function assetValidation(req, res, next) {
 
 			eventRecord.eventTime = new Date();
 			eventRecord.eventStatus = constants.ERROR;
-			eventRecord.eventMessage = 'The requested resource does not exist';
+			eventRecord.eventMessage = 'Responder repository info for the GTIN is invalid. Please contact system admin.';
 			eventRecord.entityType = connectivityInfo.entityType;
 			eventRecord.entityId = connectivityInfo.entityId;
 			eventRecord.statusCode = 404;
