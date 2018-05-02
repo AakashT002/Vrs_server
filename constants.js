@@ -40,6 +40,7 @@ define({
 	LD: 'Lookup Directory',
 	OTHER_VRS: 'Other VRS',
 	ADD: 'add',
-	DELETE: 'delete'
+	DELETE: 'delete',
+	PRODUCT_NOT_VERIFIED: 'PRODUCT_NOT_VERIFIED'
 });
 

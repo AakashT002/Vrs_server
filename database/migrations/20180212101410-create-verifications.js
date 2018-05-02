@@ -78,6 +78,10 @@ module.exports = {
 					deviceId: {
 						allowNull: true,
 						type: Sequelize.STRING
+					},
+					nextStepCode: {
+						allowNull: true,
+						type: Sequelize.STRING
 					}
 				});
 			});

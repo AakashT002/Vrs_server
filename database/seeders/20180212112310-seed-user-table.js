@@ -31,6 +31,13 @@ module.exports = {
 				lastName: 'User',
 				userName: 'testuser',
 				email: 'testuser@vrs.cognizant.com'
+			},
+			{
+				id: '98d76118-8c68-4dd7-835e-5b0e82b00a0e',
+				firstName: 'Kattie',
+				lastName: 'Ryan',
+				userName: 'kattie',
+				email: 'kattie.ryan@cognizant.vrs.com'
 			}
 		]);
 	},

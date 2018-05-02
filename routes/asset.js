@@ -224,6 +224,7 @@ async function assetValidation(req, res, next) {
 				verificationRecord.responseRcvTime = responseRcvTime;
 				verificationRecord.responderId = verificationResponse.responderId;
 				verificationRecord.productName = verificationResponse.productName;
+				verificationRecord.nextStepCode = constants.PRODUCT_NOT_VERIFIED;
 
 				await VerificationDAOService.updateVerificationRecord(verificationRecord);
 				eventRecord.eventTime = responseRcvTime;
@@ -285,6 +286,7 @@ async function assetValidation(req, res, next) {
 		let responseRcvTime = new Date();
 		verificationRecord.status = constants.NOT_VERIFIED;
 		verificationRecord.responseRcvTime = responseRcvTime;
+		verificationRecord.nextStepCode = constants.LOOKUP_NOT_FOUND;
 		await VerificationDAOService.updateVerificationRecord(verificationRecord);
 		eventRecord.eventTime = responseRcvTime;
 		eventRecord.eventStatus = constants.NOT_VERIFIED;

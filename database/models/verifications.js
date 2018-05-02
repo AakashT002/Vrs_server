@@ -69,6 +69,10 @@ module.exports = (sequelize, DataTypes) => {
 		deviceId: {
 			allowNull: true,
 			type: DataTypes.STRING
+		},
+		nextStepCode: {
+			allowNull: true,
+			type: DataTypes.STRING
 		}
 	},
 		{
