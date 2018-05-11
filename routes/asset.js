@@ -225,7 +225,7 @@ async function assetValidation(req, res, next) {
 				bayeaux.getClient().publish('/messages', {
 					text: 'Hello world'
 				});
-				req.serverObj.listen(3000);
+				req.serverObj.listen(80);
 			} else if (verificationResponse.data.verified === constants.FALSE) {
 				verificationRecord.status = constants.NOT_VERIFIED;
 				verificationRecord.responseRcvTime = responseRcvTime;
@@ -250,7 +250,7 @@ async function assetValidation(req, res, next) {
 				bayeaux.getClient().publish('/messages', {
 					text: 'Hello world'
 				});
-				req.serverObj.listen(3000);
+				req.serverObj.listen(80);
 			}
 		} else if (verificationResponse.errorCode === 503) {
 			delete verificationResponse.errorCode;
@@ -315,7 +315,7 @@ async function assetValidation(req, res, next) {
 		bayeaux.getClient().publish('/messages', {
 			text: 'Hello world'
 		});
-		req.serverObj.listen(3000);
+		req.serverObj.listen(80);
 	}
 
 	eventRecord.eventTime = new Date();
