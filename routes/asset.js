@@ -12,7 +12,7 @@ const RESTServiceHandler = require('../services/RESTServiceHandler');
 const VerificationRecord = require('../models/VerificationRecord');
 const LookupService = require('../services/LookupService');
 const faye = require('faye');
-var bayeaux = new faye.NodeAdapter({mount: '/', timeout:45});
+var bayeaux = new faye.NodeAdapter({mount: '/faye', timeout:45});
 
 // Route definition
 assetRouter.post(constants.ASSET_VERIFICATION, assetValidation);
