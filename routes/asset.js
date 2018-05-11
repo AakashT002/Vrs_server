@@ -221,11 +221,13 @@ async function assetValidation(req, res, next) {
 				_responseData.data.verified = constants.TRUE;
 				_responseData.timestamp = responseRcvTime;
 				_responseData.productName = verificationResponse.productName;
+				console.log('req.port::', req.port);
 				bayeaux.attach(req.serverObj);
+				console.log('bayeaux::', bayeaux);				
 				bayeaux.getClient().publish('/messages', {
 					text: 'Hello world'
 				});
-				req.serverObj.listen(80);
+				req.serverObj.listen(req.port);
 			} else if (verificationResponse.data.verified === constants.FALSE) {
 				verificationRecord.status = constants.NOT_VERIFIED;
 				verificationRecord.responseRcvTime = responseRcvTime;
@@ -250,7 +252,7 @@ async function assetValidation(req, res, next) {
 				bayeaux.getClient().publish('/messages', {
 					text: 'Hello world'
 				});
-				req.serverObj.listen(80);
+				req.serverObj.listen(req.port);
 			}
 		} else if (verificationResponse.errorCode === 503) {
 			delete verificationResponse.errorCode;
@@ -315,7 +317,7 @@ async function assetValidation(req, res, next) {
 		bayeaux.getClient().publish('/messages', {
 			text: 'Hello world'
 		});
-		req.serverObj.listen(80);
+		req.serverObj.listen(req.port);
 	}
 
 	eventRecord.eventTime = new Date();

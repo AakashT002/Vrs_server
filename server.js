@@ -28,6 +28,7 @@ var server = restify.createServer({
 
 server.use(function(req, res, next) {
 	req.serverObj = server;
+	req.port = port;
 	next();
 });
 
