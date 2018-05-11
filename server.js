@@ -26,6 +26,11 @@ var server = restify.createServer({
 	name: 'VRS Requestor Services'
 });
 
+server.use(function(req, res, next) {
+	req.serverObj = server;
+	next();
+});
+
 const cors = corsMiddleWare({
 	allowHeaders: ['Authorization'],
 	exposeHeaders: ['Authorization']

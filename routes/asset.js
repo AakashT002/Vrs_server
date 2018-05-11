@@ -11,6 +11,8 @@ const LookupDirectory = require('../utils/lookupDirectory');
 const RESTServiceHandler = require('../services/RESTServiceHandler');
 const VerificationRecord = require('../models/VerificationRecord');
 const LookupService = require('../services/LookupService');
+const faye = require('faye');
+var bayeaux = new faye.NodeAdapter({mount: '/faye', timeout:45});
 
 // Route definition
 assetRouter.post(constants.ASSET_VERIFICATION, assetValidation);
@@ -219,6 +221,11 @@ async function assetValidation(req, res, next) {
 				_responseData.data.verified = constants.TRUE;
 				_responseData.timestamp = responseRcvTime;
 				_responseData.productName = verificationResponse.productName;
+				bayeaux.attach(req.serverObj);
+				bayeaux.getClient().publish('/messages', {
+					text: 'Hello world'
+				});
+				req.serverObj.listen(3000);
 			} else if (verificationResponse.data.verified === constants.FALSE) {
 				verificationRecord.status = constants.NOT_VERIFIED;
 				verificationRecord.responseRcvTime = responseRcvTime;
@@ -239,6 +246,11 @@ async function assetValidation(req, res, next) {
 				_responseData.data.verified = constants.FALSE;
 				_responseData.timestamp = responseRcvTime;
 				_responseData.productName = verificationResponse.productName;
+				bayeaux.attach(req.serverObj);
+				bayeaux.getClient().publish('/messages', {
+					text: 'Hello world'
+				});
+				req.serverObj.listen(3000);
 			}
 		} else if (verificationResponse.errorCode === 503) {
 			delete verificationResponse.errorCode;
@@ -299,6 +311,11 @@ async function assetValidation(req, res, next) {
 
 		_responseData.data.verified = constants.FALSE;
 		_responseData.timestamp = responseRcvTime;
+		bayeaux.attach(req.serverObj);
+		bayeaux.getClient().publish('/messages', {
+			text: 'Hello world'
+		});
+		req.serverObj.listen(3000);
 	}
 
 	eventRecord.eventTime = new Date();
