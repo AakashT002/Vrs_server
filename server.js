@@ -11,6 +11,8 @@ const constants = require('./constants');
 const models = require('./database/models');
 const tokenHandler = require('./utils/tokenHandler');
 const LookupService = require('./services/LookupService');
+const faye = require('faye');
+var bayeaux = new faye.NodeAdapter({mount: '/faye', timeout:45});
 
 if (env === 'development') {
 	dotenv.config({ path: './.env.sample' });
@@ -67,6 +69,11 @@ server.use(cors.actual);
 
 // Routes
 server.get('/', function (req, res, next) {
+	bayeaux.attach(server);
+	bayeaux.getClient().publish('/messages', {
+		text: 'Hello world on heroku'
+	});
+	server.listen(port);
 	res.send(200, server.name);
 	next();
 });
