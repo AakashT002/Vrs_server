@@ -31,6 +31,7 @@ async function assetValidation(req, res, next) {
 			'error_message': '',
 		},
 	};
+	var users = constants.USERS;	
 
 	let parsedRequest = await RequestValidation.parseRequest(req);
 	
@@ -221,11 +222,15 @@ async function assetValidation(req, res, next) {
 				_responseData.data.verified = constants.TRUE;
 				_responseData.timestamp = responseRcvTime;
 				_responseData.productName = verificationResponse.productName;
-				console.log('req.port::', req.port);
 				bayeaux.attach(req.serverObj);
-				console.log('bayeaux::', bayeaux);				
+				var messageObj = {
+					status: constants.VERIFIED,
+					userName: users[verificationRecord.userId],
+					deviceId: parsedRequest.deviceId
+				};
+				console.log('messageObj:', JSON.stringify(messageObj));
 				bayeaux.getClient().publish('/messages', {
-					text: 'Hello world'
+					text: messageObj
 				});
 				req.serverObj.listen(req.port);
 			} else if (verificationResponse.data.verified === constants.FALSE) {
@@ -249,8 +254,14 @@ async function assetValidation(req, res, next) {
 				_responseData.timestamp = responseRcvTime;
 				_responseData.productName = verificationResponse.productName;
 				bayeaux.attach(req.serverObj);
+				var messageObj = {
+					status: constants.NOT_VERIFIED,
+					userName: users[verificationRecord.userId],
+					deviceId: parsedRequest.deviceId
+				};
+				console.log('messageObj:', JSON.stringify(messageObj));				
 				bayeaux.getClient().publish('/messages', {
-					text: 'Hello world'
+					text: messageObj
 				});
 				req.serverObj.listen(req.port);
 			}
@@ -314,8 +325,14 @@ async function assetValidation(req, res, next) {
 		_responseData.data.verified = constants.FALSE;
 		_responseData.timestamp = responseRcvTime;
 		bayeaux.attach(req.serverObj);
+		var messageObj = {
+			status: constants.NOT_VERIFIED,
+			userName: users[verificationRecord.userId],
+			deviceId: parsedRequest.deviceId
+		};
+		console.log('messageObj:', JSON.stringify(messageObj));		
 		bayeaux.getClient().publish('/messages', {
-			text: 'Hello world'
+			text: messageObj
 		});
 		req.serverObj.listen(req.port);
 	}

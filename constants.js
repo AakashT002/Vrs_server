@@ -41,6 +41,11 @@ define({
 	OTHER_VRS: 'Other VRS',
 	ADD: 'add',
 	DELETE: 'delete',
-	PRODUCT_NOT_VERIFIED: 'PRODUCT_NOT_VERIFIED'
+	PRODUCT_NOT_VERIFIED: 'PRODUCT_NOT_VERIFIED',
+	USERS: {
+		'eb7a581f-f06c-4290-a805-64e10cb314b4' : 'Jim Thomson',
+		'f1e710ab-c3eb-4b0d-8617-844af593e8dc': 'Shankar Sharma',
+		'98d76118-8c68-4dd7-835e-5b0e82b00a0e': 'Kattie Ryan'
+	}
 });
 
