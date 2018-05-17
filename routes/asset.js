@@ -222,17 +222,17 @@ async function assetValidation(req, res, next) {
 				_responseData.data.verified = constants.TRUE;
 				_responseData.timestamp = responseRcvTime;
 				_responseData.productName = verificationResponse.productName;
-				bayeaux.attach(req.serverObj);
+				// bayeaux.attach(req.serverObj);
 				var messageObj = {
 					status: constants.VERIFIED,
 					userName: users[verificationRecord.userId],
 					deviceId: parsedRequest.deviceId
 				};
 				console.log('messageObj:', JSON.stringify(messageObj));
-				bayeaux.getClient().publish('/messages', {
+				req.bayeaux.getClient().publish('/messages', {
 					text: messageObj
 				});
-				req.serverObj.listen(req.port);
+				// req.serverObj.listen(req.port);
 			} else if (verificationResponse.data.verified === constants.FALSE) {
 				verificationRecord.status = constants.NOT_VERIFIED;
 				verificationRecord.responseRcvTime = responseRcvTime;

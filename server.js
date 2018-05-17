@@ -28,12 +28,6 @@ var server = restify.createServer({
 	name: 'VRS Requestor Services'
 });
 
-server.use(function(req, res, next) {
-	req.serverObj = server;
-	req.port = port;
-	next();
-});
-
 const cors = corsMiddleWare({
 	allowHeaders: ['Authorization'],
 	exposeHeaders: ['Authorization']
@@ -71,12 +65,17 @@ server.use(cors.actual);
 server.get('/', function (req, res, next) {
 	console.log('before pubsub');
 	bayeaux.attach(server);
-	bayeaux.getClient().publish('/messages', {
-		text: 'Hello world on heroku'
-	});
+	// bayeaux.getClient().publish('/messages', {
+	// 	text: 'Hello world on heroku'
+	// });
 	server.listen(port);
 	console.log('after pubsub');	
 	res.send(200, server.name);
+	next();
+});
+
+server.use(function(req, res, next) {
+	req.bayeaux = bayeaux;
 	next();
 });
 
