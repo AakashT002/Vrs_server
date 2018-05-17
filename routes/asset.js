@@ -67,6 +67,7 @@ async function assetValidation(req, res, next) {
 	});
 
 	let eventRecord = {};
+	let tempDeviceId = parsedRequest.deviceId === '' ? 'Others' : parsedRequest.deviceId;
 	let deviceId = parsedRequest.deviceType === 'scanner' ? ` ${parsedRequest.deviceId}` : '';
 	eventRecord.verificationId = parsedRequest.txId;
 	eventRecord.eventTime = parsedRequest.requestReceivedTime;
@@ -227,7 +228,7 @@ async function assetValidation(req, res, next) {
 
 				messageObj.status = constants.VERIFIED;
 				messageObj.userName = users[verificationRecord.userId];
-				messageObj.deviceId = parsedRequest.deviceId;
+				messageObj.deviceId = tempDeviceId;
 				bayeaux.getClient().publish('/messages', {
 					text: messageObj
 				});
@@ -254,7 +255,7 @@ async function assetValidation(req, res, next) {
 
 				messageObj.status = constants.NOT_VERIFIED;
 				messageObj.userName = users[verificationRecord.userId];
-				messageObj.deviceId = parsedRequest.deviceId;
+				messageObj.deviceId = tempDeviceId;
 				bayeaux.getClient().publish('/messages', {
 					text: messageObj
 				});
@@ -321,7 +322,7 @@ async function assetValidation(req, res, next) {
 
 		messageObj.status = constants.NOT_VERIFIED;
 		messageObj.userName = users[verificationRecord.userId];
-		messageObj.deviceId = parsedRequest.deviceId;
+		messageObj.deviceId = tempDeviceId;
 		bayeaux.getClient().publish('/messages', {
 			text: messageObj
 		});
