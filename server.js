@@ -11,9 +11,9 @@ const constants = require('./constants');
 const models = require('./database/models');
 const tokenHandler = require('./utils/tokenHandler');
 const LookupService = require('./services/LookupService');
-const PubSubService = require('./services/PubSubService');
-const faye = require('faye');
-var bayeaux = new faye.NodeAdapter({mount: '/faye', timeout:45});
+// const PubSubService = require('./services/PubSubService');
+// const faye = require('faye');
+// var bayeaux = new faye.NodeAdapter({mount: '/faye', timeout:45});
 
 if (env === 'development') {
 	dotenv.config({ path: './.env.sample' });
@@ -29,11 +29,11 @@ var server = restify.createServer({
 	name: 'VRS Requestor Services'
 });
 
-// server.use(function(req, res, next) {
-// 	req.serverObj = server;
-// 	req.port = port;
-// 	next();
-// });
+server.use(function(req, res, next) {
+	req.serverObj = server;
+	req.port = port;
+	next();
+});
 
 const cors = corsMiddleWare({
 	allowHeaders: ['Authorization'],
@@ -70,16 +70,16 @@ server.use(cors.actual);
 
 // Routes
 server.get('/', function (req, res, next) {
-	bayeaux.attach(server);
-	server.listen(port);
+	// bayeaux.attach(server);
+	// server.listen(port);
 	// PubSubService.bayeauxPublish(bayeaux);
 	res.send(200, server.name);
 	next();
 });
-server.use(function(req, res, next) {
-	req.bayeaux = bayeaux;
-	next();
-});
+// server.use(function(req, res, next) {
+// 	req.bayeaux = bayeaux;
+// 	next();
+// });
 
 assetRouter.applyRoutes(server, constants.API_PREFIX);
 userRouter.applyRoutes(server, constants.API_PREFIX);

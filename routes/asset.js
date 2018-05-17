@@ -11,9 +11,9 @@ const LookupDirectory = require('../utils/lookupDirectory');
 const RESTServiceHandler = require('../services/RESTServiceHandler');
 const VerificationRecord = require('../models/VerificationRecord');
 const LookupService = require('../services/LookupService');
-const PubSubService = require('../services/PubSubService');
-// const faye = require('faye');
-// var bayeaux = new faye.NodeAdapter({mount: '/faye', timeout:45});
+// const PubSubService = require('../services/PubSubService');
+const faye = require('faye');
+var bayeaux = new faye.NodeAdapter({mount: '/faye', timeout:45});
 
 // Route definition
 assetRouter.post(constants.ASSET_VERIFICATION, assetValidation);
@@ -22,8 +22,9 @@ assetRouter.post(constants.ASSET_VERIFICATION, assetValidation);
 // For : /api/asset/:epc_identifier/validation
 async function assetValidation(req, res, next) {
 	const requestReceivedTime = new Date();
-	var bayeaux = req.bayeaux;
-	console.log(bayeaux);
+	bayeaux.attach(req.serverObj);
+	// var bayeaux = req.bayeaux;
+	// console.log(bayeaux);
 
 	var _responseData = {
 		'code': 200,
@@ -339,7 +340,7 @@ async function assetValidation(req, res, next) {
 		});
 		// req.serverObj.listen(req.port);
 	}
-	// req.serverObj.listen(req.port);
+	req.serverObj.listen(req.port);
 
 	eventRecord.eventTime = new Date();
 	eventRecord.eventStatus = constants.RESPONSE_DELIVERED;
