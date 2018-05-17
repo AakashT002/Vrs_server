@@ -22,7 +22,7 @@ assetRouter.post(constants.ASSET_VERIFICATION, assetValidation);
 async function assetValidation(req, res, next) {
 	const requestReceivedTime = new Date();
 	bayeaux.attach(req.serverObj);
-	var messageObj;
+	var messageObj = {};
 
 	var _responseData = {
 		'code': 200,
@@ -318,7 +318,7 @@ async function assetValidation(req, res, next) {
 
 		_responseData.data.verified = constants.FALSE;
 		_responseData.timestamp = responseRcvTime;
-		
+
 		messageObj.status = constants.NOT_VERIFIED;
 		messageObj.userName = users[verificationRecord.userId];
 		messageObj.deviceId = parsedRequest.deviceId;
