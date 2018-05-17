@@ -23,7 +23,7 @@ assetRouter.post(constants.ASSET_VERIFICATION, assetValidation);
 async function assetValidation(req, res, next) {
 	const requestReceivedTime = new Date();
 	var bayeaux = req.bayeaux;
-	console.log(JSON.stringify(bayeaux));
+	console.log(bayeaux);
 
 	var _responseData = {
 		'code': 200,
