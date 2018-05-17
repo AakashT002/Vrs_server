@@ -11,6 +11,9 @@ const constants = require('./constants');
 const models = require('./database/models');
 const tokenHandler = require('./utils/tokenHandler');
 const LookupService = require('./services/LookupService');
+const PubSubService = require('./services/PubSubService');
+const faye = require('faye');
+var bayeaux = new faye.NodeAdapter({mount: '/faye', timeout:45});
 
 if (env === 'development') {
 	dotenv.config({ path: './.env.sample' });
@@ -67,6 +70,9 @@ server.use(cors.actual);
 
 // Routes
 server.get('/', function (req, res, next) {
+	bayeaux.attach(server);
+	server.listen(port);
+	PubSubService.bayeauxPublish(bayeaux);
 	res.send(200, server.name);
 	next();
 });

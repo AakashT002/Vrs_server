@@ -22,7 +22,7 @@ assetRouter.post(constants.ASSET_VERIFICATION, assetValidation);
 // For : /api/asset/:epc_identifier/validation
 async function assetValidation(req, res, next) {
 	const requestReceivedTime = new Date();
-	var bayeaux = PubSubService.bayeauxPublish(req.serverObj);
+	var bayeaux = PubSubService.bayeaux;
 	console.log(JSON.stringify(bayeaux));
 
 	var _responseData = {
