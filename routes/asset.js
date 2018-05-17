@@ -21,6 +21,7 @@ assetRouter.post(constants.ASSET_VERIFICATION, assetValidation);
 // For : /api/asset/:epc_identifier/validation
 async function assetValidation(req, res, next) {
 	const requestReceivedTime = new Date();
+	bayeaux.attach(req.serverObj);
 
 	var _responseData = {
 		'code': 200,
@@ -222,7 +223,7 @@ async function assetValidation(req, res, next) {
 				_responseData.data.verified = constants.TRUE;
 				_responseData.timestamp = responseRcvTime;
 				_responseData.productName = verificationResponse.productName;
-				bayeaux.attach(req.serverObj);
+				// bayeaux.attach(req.serverObj);
 				var messageObj = {
 					status: constants.VERIFIED,
 					userName: users[verificationRecord.userId],
@@ -232,7 +233,7 @@ async function assetValidation(req, res, next) {
 				bayeaux.getClient().publish('/messages', {
 					text: messageObj
 				});
-				req.serverObj.listen(req.port);
+				// req.serverObj.listen(req.port);
 			} else if (verificationResponse.data.verified === constants.FALSE) {
 				verificationRecord.status = constants.NOT_VERIFIED;
 				verificationRecord.responseRcvTime = responseRcvTime;
@@ -253,7 +254,7 @@ async function assetValidation(req, res, next) {
 				_responseData.data.verified = constants.FALSE;
 				_responseData.timestamp = responseRcvTime;
 				_responseData.productName = verificationResponse.productName;
-				bayeaux.attach(req.serverObj);
+				// bayeaux.attach(req.serverObj);
 				var messageObj = {
 					status: constants.NOT_VERIFIED,
 					userName: users[verificationRecord.userId],
@@ -263,7 +264,7 @@ async function assetValidation(req, res, next) {
 				bayeaux.getClient().publish('/messages', {
 					text: messageObj
 				});
-				req.serverObj.listen(req.port);
+				// req.serverObj.listen(req.port);
 			}
 		} else if (verificationResponse.errorCode === 503) {
 			delete verificationResponse.errorCode;
@@ -324,7 +325,7 @@ async function assetValidation(req, res, next) {
 
 		_responseData.data.verified = constants.FALSE;
 		_responseData.timestamp = responseRcvTime;
-		bayeaux.attach(req.serverObj);
+		// bayeaux.attach(req.serverObj);
 		var messageObj = {
 			status: constants.NOT_VERIFIED,
 			userName: users[verificationRecord.userId],
@@ -334,8 +335,9 @@ async function assetValidation(req, res, next) {
 		bayeaux.getClient().publish('/messages', {
 			text: messageObj
 		});
-		req.serverObj.listen(req.port);
+		// req.serverObj.listen(req.port);
 	}
+	req.serverObj.listen(req.port);
 
 	eventRecord.eventTime = new Date();
 	eventRecord.eventStatus = constants.RESPONSE_DELIVERED;
