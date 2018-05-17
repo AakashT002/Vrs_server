@@ -11,6 +11,8 @@ const constants = require('./constants');
 const models = require('./database/models');
 const tokenHandler = require('./utils/tokenHandler');
 const LookupService = require('./services/LookupService');
+const faye = require('faye');
+var bayeaux = new faye.NodeAdapter({mount: '/faye', timeout:45});
 
 if (env === 'development') {
 	dotenv.config({ path: './.env.sample' });
@@ -24,12 +26,6 @@ let open = amqplib.connect(process.env.CLOUDAMQP_URL);
 const port = normalizePort(process.env.PORT || 3000);
 var server = restify.createServer({
 	name: 'VRS Requestor Services'
-});
-
-server.use(function(req, res, next) {
-	req.serverObj = server;
-	req.port = port;
-	next();
 });
 
 const cors = corsMiddleWare({
@@ -67,7 +63,14 @@ server.use(cors.actual);
 
 // Routes
 server.get('/', function (req, res, next) {
+	bayeaux.attach(server);
+	server.listen(port);
 	res.send(200, server.name);
+	next();
+});
+
+server.use(function(req, res, next) {
+	req.bayeaux = bayeaux;
 	next();
 });
 
