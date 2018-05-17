@@ -76,6 +76,10 @@ server.get('/', function (req, res, next) {
 	res.send(200, server.name);
 	next();
 });
+server.use(function(req, res, next) {
+	req.bayeaux = bayeaux;
+	next();
+});
 
 assetRouter.applyRoutes(server, constants.API_PREFIX);
 userRouter.applyRoutes(server, constants.API_PREFIX);
