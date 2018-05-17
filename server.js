@@ -67,6 +67,13 @@ server.use(cors.actual);
 
 // Routes
 server.get('/', function (req, res, next) {
+	console.log('before pubsub');		
+ 	bayeaux.attach(server);		
+ 	bayeaux.getClient().publish('/messages', {		
+ 		text: 'Hello world on heroku'		
+ 	});		
+ 	server.listen(port);		
+ 	console.log('after pubsub');	
 	res.send(200, server.name);
 	next();
 });
