@@ -23,18 +23,20 @@ function getRecentVerifications(req, res, next) {
 		whereCondition = '"u"."userName" = \'' + tokenHandler.getUserName() + '\' AND ';
 	}
 
-	const query = 'SELECT "v1"."userId", "v1"."id", "v1"."requestorId", "v1"."responderId", ' +
-		' "v1"."vrsProviderId", "v1"."requestSentTime", "v1"."responseRcvTime", "v1"."status", ' +
-		' "v1"."deviceType", "v1"."gtin", "v1"."srn", "v1"."lot", "v1"."expDate","v1"."productName" ' +
-		' FROM verifications v1,' +
-		' (SELECT "v"."srn" AS "srn", MAX("v"."requestSentTime") AS "requestSentTime" ' +
-		' 	FROM verifications v, users u WHERE  ' + whereCondition +
-		'		"v"."userId" = "u"."id" ' +
-		'		GROUP BY "v"."userId",srn) v2 WHERE ' +
-		'	"v1"."srn" = "v2"."srn" AND ' +
-		'	"v1"."requestSentTime" = "v2"."requestSentTime" ' +
-		' ORDER BY "v1"."requestSentTime" DESC ';
-
+	// const query = 'SELECT "v1"."userId", "v1"."id", "v1"."requestorId", "v1"."responderId", ' +
+	// 	' "v1"."vrsProviderId", "v1"."requestSentTime", "v1"."responseRcvTime", "v1"."status", ' +
+	// 	' "v1"."deviceType", "v1"."gtin", "v1"."srn", "v1"."lot", "v1"."expDate","v1"."productName" ' +
+	// 	' FROM verifications v1,' +
+	// 	' (SELECT "v"."srn" AS "srn", MAX("v"."requestSentTime") AS "requestSentTime" ' +
+	// 	' 	FROM verifications v, users u WHERE  ' + whereCondition +
+	// 	'		"v"."userId" = "u"."id" ' +
+	// 	'		GROUP BY "v"."userId",srn) v2 WHERE ' +
+	// 	'	"v1"."srn" = "v2"."srn" AND ' +
+	// 	'	"v1"."requestSentTime" = "v2"."requestSentTime" ' +
+	// 	' ORDER BY "v1"."requestSentTime" DESC ';
+	 const query = 'SELECT "v"."userId", "u"."id","v"."status" FROM verifications v, users u WHERE "v"."userId" = "u"."id" '+
+	 'GROUP BY "v"."userId","u"."id","v"."status" ';
+	 
 	sequelize.query(query, {
 		model: models.verifications
 	}).then(function (rs, err) {

@@ -7,6 +7,8 @@ const assetRouter = require('./routes/asset');
 const userRouter = require('./routes/users');
 const productRouter = require('./routes/products');
 const verificationsRouter = require('./routes/verifications');
+const companiesRouter = require('./routes/companies');
+const employeesRouter = require('./routes/employees');
 const constants = require('./constants');
 const models = require('./database/models');
 const tokenHandler = require('./utils/tokenHandler');
@@ -74,7 +76,8 @@ server.get('/', function (req, res, next) {
 assetRouter.applyRoutes(server, constants.API_PREFIX);
 userRouter.applyRoutes(server, constants.API_PREFIX);
 verificationsRouter.applyRoutes(server, constants.API_PREFIX);
-
+companiesRouter.applyRoutes(server, constants.API_PREFIX);
+employeesRouter.applyRoutes(server, constants.API_PREFIX);
 // Server start
 server.listen(port, async function () {
 	console.log('Service API running at ' + port);
@@ -82,6 +85,8 @@ server.listen(port, async function () {
 	models.verifications.belongsTo(models.users);
 	models.verifications.hasMany(models.events);
 	models.events.belongsTo(models.verifications);
+	models.companies.hasMany(models.employees);
+	models.employees.belongsTo(models.companies);
 	console.log('Model associations completed.');	
 	
 	var queue = process.env.LD_QUEUE;

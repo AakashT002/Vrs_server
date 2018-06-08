@@ -1,7 +1,7 @@
 module.exports = {
 	development: {
 		username: 'postgres',
-		password: 'password',
+		password: 'password-123',
 		database: 'vrs-dev-db',
 		host: '127.0.0.1',
 		dialect: 'postgres',
@@ -9,7 +9,7 @@ module.exports = {
 	},
 	test: {
 		username: 'postgres',
-		password: 'password',
+		password: 'password-123',
 		database: 'vrs-test-db',
 		host: '127.0.0.1',
 		dialect: 'postgres',
